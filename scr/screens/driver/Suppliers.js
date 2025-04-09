@@ -61,16 +61,15 @@ export default function QuickLoan({ navigation }) {
                 {/* Supplier Info */}
                 <View style={styles.supplierInfoContainer}>
                   <Text style={styles.supplierInfo}>Supplier ID: <Text style={styles.supplierInfoValue}>304</Text></Text>
-                  <Text style={styles.supplierInfo}>Date: <Text style={styles.supplierInfoValue}>2024 Nov 12</Text></Text>
+                  <Text style={styles.supplierInfo}>Current rate per 1 kg of tea leaves:  <Text style={styles.supplierInfoValue}>Rs.170/-</Text></Text>
+                  <Text style={styles.supplierInfo}>Leaves collected this month: <Text style={styles.supplierInfoValue}>30 kg</Text></Text>
                 </View>
 
           {/* Loan Form */}
           <View style={styles.formContainer}>
-            <Text style={styles.formTitle}>Loan Request</Text>
+            <Text style={styles.formTitle}>Update Daily Leaf Weight</Text>
+
             
-            <Text style={styles.description}>
-              If you need a loan, please provide the following details:
-            </Text>
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Loan Amount:</Text>
@@ -175,6 +174,9 @@ const styles = StyleSheet.create({
       paddingHorizontal: 8,
       paddingVertical: 4,
       marginTop: 4,
+    },
+    supplierInfoValue: {
+      fontWeight: 'bold',
     },
     logoText: {
         fontSize: 18,
