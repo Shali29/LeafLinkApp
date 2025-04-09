@@ -44,32 +44,19 @@ export default function QuickLoan({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.header}>
-                  <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="black" />
-                  </TouchableOpacity>
-                  <View style={styles.userInfoContainer}>
-                    <View style={styles.avatarContainer}>
-                                <Ionicons name="person" size={24} color="#6B7280" />
-                    </View>
-                    <View style={styles.userDetails}>
-                      <Text style={styles.greeting}>Hi, Mr. Perera!</Text>
-                    </View>
-                  </View>
-                </View>
-          
-                {/* Supplier Info */}
-                <View style={styles.supplierInfoContainer}>
+          <View style={styles.supplierInfoContainer}>
                   <Text style={styles.supplierInfo}>Supplier ID: <Text style={styles.supplierInfoValue}>304</Text></Text>
-                  <Text style={styles.supplierInfo}>Current rate per 1 kg of tea leaves:  <Text style={styles.supplierInfoValue}>Rs.170/-</Text></Text>
-                  <Text style={styles.supplierInfo}>Leaves collected this month: <Text style={styles.supplierInfoValue}>30 kg</Text></Text>
-                </View>
+                  <Text style={styles.supplierInfo}>Date: <Text style={styles.supplierInfoValue}>2024 Nov 12</Text></Text>
+          </View>
+          
 
           {/* Loan Form */}
           <View style={styles.formContainer}>
-            <Text style={styles.formTitle}>Update Daily Leaf Weight</Text>
-
+            <Text style={styles.formTitle}>Loan Request</Text>
             
+            <Text style={styles.description}>
+              If you need a loan, please provide the following details:
+            </Text>
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Loan Amount:</Text>
@@ -91,6 +78,7 @@ export default function QuickLoan({ navigation }) {
                 placeholder="Enter duration (in months)"
                 keyboardType="numeric"
               />
+
             </View>
 
             <View style={styles.inputGroup}>
@@ -132,28 +120,14 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 15,
-      backgroundColor: '#e6f7ee',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 15,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
     },
     backButton: {
-      marginRight: 15,
-    },
-    userInfoContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    avatarContainer: {
-      marginRight: 10,
-    },
-    userDetails: {
-      justifyContent: 'center',
-    },
-    greeting: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: '#000',
+        padding: 5,
     },
     supplierInfoContainer: {
       paddingHorizontal: 20,
