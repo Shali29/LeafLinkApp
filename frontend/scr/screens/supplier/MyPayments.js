@@ -33,7 +33,7 @@ const MyPayments = ({ navigation }) => {
         <Text style={styles.paymentLeaf}>{item.leafWeight} kg of leaves</Text>
       </View>
       <View style={styles.paymentRight}>
-        <Text style={styles.paymentAmount}>₹{item.amount.toLocaleString()}</Text>
+        <Text style={styles.paymentAmount}>Rs.{item.amount.toLocaleString()}</Text>
         <View style={[styles.statusBadge, 
           item.status === 'Pending' ? styles.pendingBadge : 
           item.status === 'Processing' ? styles.processingBadge : styles.completedBadge
@@ -58,7 +58,7 @@ const MyPayments = ({ navigation }) => {
           {selectedPeriod === 'current' ? 'Recent Earnings (Oct-Nov)' : 'Previous Earnings (Aug-Sep)'}
         </Text>
         <Text style={styles.summaryAmount}>
-          ₹{calculateTotal(selectedPeriod).toLocaleString()}
+          Rs.{calculateTotal(selectedPeriod).toLocaleString()}
         </Text>
       </View>
       

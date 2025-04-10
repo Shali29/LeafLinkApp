@@ -22,7 +22,7 @@ import DriverLogin from '../screens/driver/Login';
 import DriverSignup from '../screens/driver/Signup';
 import DriverHome from '../screens/driver/Home';
 import Suppliers from '../screens/driver/Suppliers';
-import Requests from '../screens/driver/Requests';
+import OrderRequestsNotification  from '../screens/driver/OrderRequestsNotification';
 import Map from '../screens/driver/Map';
 
 const Stack = createStackNavigator();
@@ -50,7 +50,7 @@ const AppNavigator = () => {
       <Stack.Screen name="DriverSignup" component={DriverSignup} />
       <Stack.Screen name="DriverHome" component={DriverHome} />
       <Stack.Screen name="Suppliers" component={Suppliers} /> 
-      <Stack.Screen name="Requests" component={Requests} />
+      <Stack.Screen name="OrderRequestsNotification" component={OrderRequestsNotification} />
       <Stack.Screen name="Map" component={Map} />
     </Stack.Navigator>
   );

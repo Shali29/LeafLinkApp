@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function QuickLoan({ navigation }) {
+export default function Suppliers({ navigation }) {
   const [TeaBagWeight, setTeaBagWeight] = useState('');
   const [WaterWeight, setWaterWeight] = useState('');
   const [BagWeight, setBagWeight] = useState('');
@@ -26,11 +26,19 @@ export default function QuickLoan({ navigation }) {
     navigation.goBack();
   };
 
-  const handleSubmit = () => {
-    // Handle loan submission logic here
-    console.log({ loanAmount, repaymentDuration, purpose });
+  const handleUpload = () => {
+    // Handle leaf weight submission logic here
+    console.log({ TeaBagWeight, WaterWeight, BagWeight, TotalBalanceWeight });
     // Navigation or confirmation steps would go here
   };
+
+  const handleClear = () => {
+    setTeaBagWeight('');
+    setWaterWeight('');
+    setBagWeight('');
+    setTotalBalanceWeight('');
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,9 +128,16 @@ export default function QuickLoan({ navigation }) {
 
             <TouchableOpacity 
               style={styles.uploadButton} 
-              onPress={handleSubmit}
+              onPress={handleUpload}
             >
               <Text style={styles.submitButtonText}>Upload</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.clearButton} 
+              onPress={handleClear}
+            >
+              <Text style={styles.submitButtonText}>Clear</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -240,6 +255,19 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     backgroundColor: '#ED7152',
+    paddingVertical: 12,
+    paddingHorizontal: 100, // Modified length
+    borderRadius: 25,
+    alignItems: 'center',
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  clearButton: {
+    backgroundColor: '#F8A895',
     paddingVertical: 12,
     paddingHorizontal: 100, // Modified length
     borderRadius: 25,
