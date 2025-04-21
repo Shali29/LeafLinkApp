@@ -55,13 +55,7 @@ const Requests = ({ navigation }) => {
           value={searchQuery}
           onChangeText={setSearchQuery}
       />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="304"
-            placeholderTextColor="#999"
-            value={searchText}
-            onChangeText={setSearchText}
-          />
+          
         </View>
       </ScrollView>
       
@@ -158,6 +152,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+    marginTop: 10,
   },
   supplierInfoSection: {
     backgroundColor: '#d6f0e0',
