@@ -15,7 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 
-const OrderRequestsNotification = ({ navigation }) => {
+const Requests = ({ navigation }) => {
   const [searchText, setSearchText] = useState('304');
   const supplierId = '304';
   const supplierName = 'Mr. Perera';
@@ -244,5 +244,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderRequestsNotification;
+export default Requests;
 
