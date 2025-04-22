@@ -29,6 +29,8 @@ import Suppliers from '../screens/driver/Suppliers';
 import Requests from '../screens/driver/Requests';
 import Map from '../screens/driver/Map';
 import DriverProfile from '../screens/driver/DriverProfile';
+
+
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
