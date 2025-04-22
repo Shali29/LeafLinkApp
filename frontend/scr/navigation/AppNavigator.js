@@ -18,6 +18,8 @@ import FertilizerRequest from '../screens/supplier/FertilizerRequest';
 import TrackLorry from '../screens/supplier/TrackLorry';  
 import QuickLoan from '../screens/supplier/QuickLoan';
 import Notification from '../screens/supplier/Notification';
+import SupplierProfile from '../screens/supplier/SupplierProfile';
+import EditProfile from '../screens/supplier/EditProfile';
 
 // Driver screens
 import DriverLogin from '../screens/driver/Login';
@@ -47,6 +49,8 @@ const AppNavigator = () => {
       <Stack.Screen name="TrackLorry" component={TrackLorry} />
       <Stack.Screen name="QuickLoan" component={QuickLoan} />
       <Stack.Screen name="Notification" component={Notification} />
+      <Stack.Screen name="SupplierProfile" component={SupplierProfile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
       
       {/* Driver Screens */}
       <Stack.Screen name="DriverLogin" component={DriverLogin} />

@@ -4,7 +4,7 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
-const SupplierProfile = ({ navigation }) => {
+const EditProfile = ({ navigation }) => {
   const [fullName, setFullName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -21,6 +21,7 @@ const SupplierProfile = ({ navigation }) => {
         onPress={() => navigation.goBack()}
       >
         <AntDesign name="arrowleft" size={24} color="black" />
+        <Text style={styles.HeaderName}>Edit Profile</Text>
       </TouchableOpacity>
       
       <View style={styles.formContainer}>
@@ -28,10 +29,7 @@ const SupplierProfile = ({ navigation }) => {
           <AntDesign name="user" size={60} color="black" />
         </View>
 
-      <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
-        <Text style={styles.registerLink}>Edit Profile</Text>
-      </TouchableOpacity>  
-
+    
         <Text style={styles.sectionTitle}>Personal Details:</Text>
         <Text style={styles.ProfileDetails}>Register ID:</Text>
         <Input
@@ -75,6 +73,7 @@ const SupplierProfile = ({ navigation }) => {
 
         <Text style={styles.sectionTitle}>Bank Details:</Text>
         
+        <Text style={styles.ProfileDetails}>Account Number:</Text>
         <Input
           placeholder="Account Number"
           value={accountNumber}
@@ -83,6 +82,7 @@ const SupplierProfile = ({ navigation }) => {
           style={styles.input}
         />
         
+        <Text style={styles.ProfileDetails}>Bank Name:</Text>
         <Input
           placeholder="Bank Name"
           value={bankName}
@@ -90,11 +90,17 @@ const SupplierProfile = ({ navigation }) => {
           style={styles.input}
         />
 
+        <Text style={styles.ProfileDetails}>Branch:</Text>
         <Input
           placeholder="Branch"
           value={branch}
           onChangeText={setBranch}
           style={styles.input}
+        />
+
+        <Button
+          title="Edit"
+          style={styles.editButton}
         />
         
       </View>
@@ -140,13 +146,22 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 2,
   },
-  registerLink: {
-    color: '#53b57c',
+  HeaderName: {
+    color: 'black',
+    fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'center',
     marginBottom: 20,
     marginTop: 0.25,
   },
+  editButton: {
+    backgroundColor: '#6FCF97',
+    marginTop: 20,
+    width: '100%',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
 });
 
-export default SupplierProfile;
+export default EditProfile;

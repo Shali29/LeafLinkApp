@@ -104,7 +104,8 @@ const SupplierHome = ({ navigation }) => {
           <MaterialIcons name="history" size={29} color="#999" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="notifications-outline" size={28} color="#999" />
+          <Ionicons onPress={() => navigation.navigate('Notification')} 
+          name="notifications-outline" size={28} color="#999" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem}>
           <Ionicons onPress={() => navigation.navigate('SupplierProfile')} 

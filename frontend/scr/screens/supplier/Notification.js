@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
-export default function NotificationScreen() {
+const Notification = ({ navigation }) => {
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -57,14 +58,20 @@ export default function NotificationScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#3b82f6" />
       
+      <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+      ></TouchableOpacity>
+            <View style={styles.header1}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle1}>Notification</Text>
+            </View>
+
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerTitleContainer}>
-          <Ionicons name="notifications" size={24} color="white" />
-          <Text style={styles.headerTitle}>Notifications</Text>
-        </View>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={markAllAsRead}>
             <Text style={styles.markAllText}>Mark all as read</Text>
@@ -143,23 +150,42 @@ export default function NotificationScreen() {
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
   },
+  backButton: {
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  header1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    paddingTop: 30,
+    backgroundColor: '#E8F8E8',
+    marginTop: 0,
+  },
   header: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#6FCF97',
     padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 30,
   },
   headerTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  headerTitle1: {
+    fontSize: 28,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginLeft: 15,
   },
   headerTitle: {
     marginLeft: 8,
@@ -255,3 +281,5 @@ const styles = StyleSheet.create({
     color: '#2563eb',
   },
 });
+
+export default Notification;
