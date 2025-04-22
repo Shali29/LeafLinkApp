@@ -63,7 +63,8 @@ export default function Suppliers({ navigation }) {
             />
 
             <TouchableOpacity style={styles.notificationButton}>
-              <Ionicons name="notifications-outline" size={24} color="black" />
+              <Ionicons onPress={() => navigation.navigate('Requests')} 
+              name="notifications-outline" size={24} color="black" />
             </TouchableOpacity>
           </View>
 

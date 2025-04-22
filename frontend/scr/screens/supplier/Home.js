@@ -1,3 +1,4 @@
+/* home screen.js */
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
@@ -106,7 +107,8 @@ const SupplierHome = ({ navigation }) => {
           <Ionicons name="notifications-outline" size={28} color="#999" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="person-outline" size={28} color="#999" />
+          <Ionicons onPress={() => navigation.navigate('SupplierProfile')} 
+          name="person-outline" size={28} color="#999" />
         </TouchableOpacity>
       </View>
     </View>

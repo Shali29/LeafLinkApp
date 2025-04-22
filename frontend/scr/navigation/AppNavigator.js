@@ -1,3 +1,4 @@
+/*AppNavigator.js*/
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -16,6 +17,7 @@ import TeaPacketRequest from '../screens/supplier/TeaPacketRequest';
 import FertilizerRequest from '../screens/supplier/FertilizerRequest';
 import TrackLorry from '../screens/supplier/TrackLorry';  
 import QuickLoan from '../screens/supplier/QuickLoan';
+import Notification from '../screens/supplier/Notification';
 
 // Driver screens
 import DriverLogin from '../screens/driver/Login';
@@ -44,6 +46,7 @@ const AppNavigator = () => {
       <Stack.Screen name="FertilizerRequest" component={FertilizerRequest} />
       <Stack.Screen name="TrackLorry" component={TrackLorry} />
       <Stack.Screen name="QuickLoan" component={QuickLoan} />
+      <Stack.Screen name="Notification" component={Notification} />
       
       {/* Driver Screens */}
       <Stack.Screen name="DriverLogin" component={DriverLogin} />
