@@ -76,7 +76,8 @@ const DriverHome = ({ navigation }) => {
           name="notifications-outline" size={24} color="#999" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#999" />
+          <Ionicons onPress={() => navigation.navigate('DriverProfile')} 
+          name="person-outline" size={24} color="#999" />
         </TouchableOpacity>
       </View>
     </View>
