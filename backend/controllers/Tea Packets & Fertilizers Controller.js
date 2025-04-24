@@ -1,7 +1,7 @@
-const TeaPacketsFertilizers = require('../models/tea-packets-fertilizers');
-const Product = require('../models/products');
+import TeaPacketsFertilizers from '../models/tea-packets-fertilizers.js';
+import Product from '../models/products.js';
 
-exports.getAllOrders = async (req, res) => {
+export const getAllOrders = async (req, res) => {
   try {
     const orders = await TeaPacketsFertilizers.getAll();
     res.status(200).json(orders);
@@ -11,7 +11,7 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
-exports.getOrderById = async (req, res) => {
+export const getOrderById = async (req, res) => {
   try {
     const order = await TeaPacketsFertilizers.getById(req.params.id);
     if (!order) {
@@ -24,7 +24,7 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-exports.getOrdersBySupplier = async (req, res) => {
+export const getOrdersBySupplier = async (req, res) => {
   try {
     const orders = await TeaPacketsFertilizers.getBySupplierId(req.params.supplierId);
     res.status(200).json(orders);
@@ -34,34 +34,30 @@ exports.getOrdersBySupplier = async (req, res) => {
   }
 };
 
-exports.createOrder = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
-    // Validate required fields
     const requiredFields = ['S_RegisterID', 'ProductID', 'Qty'];
     for (const field of requiredFields) {
       if (!req.body[field]) {
         return res.status(400).json({ message: `${field} is required` });
       }
     }
-    
-    // Check if product exists and has enough stock
+
     const product = await Product.getById(req.body.ProductID);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
+
     if (product.Stock_bag < req.body.Qty) {
       return res.status(400).json({ message: 'Not enough stock available' });
     }
-    
-    // Create the order
+
     await TeaPacketsFertilizers.create(req.body);
-    
-    // Update product stock if order status is completed
+
     if (req.body.Order_Status === 'Completed') {
       await Product.updateStock(req.body.ProductID, req.body.Qty);
     }
-    
+
     res.status(201).json({ message: 'Order created successfully' });
   } catch (error) {
     console.error('Error creating order:', error);
@@ -69,29 +65,28 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-exports.updateOrderStatus = async (req, res) => {
+export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    
+
     if (!status) {
       return res.status(400).json({ message: 'Status is required' });
     }
-    
+
     const order = await TeaPacketsFertilizers.getById(req.params.id);
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    
-    // If changing to completed, check stock and update it
+
     if (status === 'Completed' && order.Order_Status !== 'Completed') {
       const product = await Product.getById(order.ProductID);
       if (product.Stock_bag < order.Qty) {
         return res.status(400).json({ message: 'Not enough stock available to complete this order' });
       }
-      
+
       await Product.updateStock(order.ProductID, order.Qty);
     }
-    
+
     await TeaPacketsFertilizers.updateStatus(req.params.id, status);
     res.status(200).json({ message: 'Order status updated successfully' });
   } catch (error) {
@@ -100,13 +95,13 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-exports.updateOrder = async (req, res) => {
+export const updateOrder = async (req, res) => {
   try {
     const order = await TeaPacketsFertilizers.getById(req.params.id);
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    
+
     await TeaPacketsFertilizers.update(req.params.id, req.body);
     res.status(200).json({ message: 'Order updated successfully' });
   } catch (error) {
@@ -115,13 +110,13 @@ exports.updateOrder = async (req, res) => {
   }
 };
 
-exports.deleteOrder = async (req, res) => {
+export const deleteOrder = async (req, res) => {
   try {
     const order = await TeaPacketsFertilizers.getById(req.params.id);
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    
+
     await TeaPacketsFertilizers.delete(req.params.id);
     res.status(200).json({ message: 'Order deleted successfully' });
   } catch (error) {
