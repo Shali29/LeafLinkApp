@@ -1,64 +1,97 @@
-const SupplierLoan = require('../models/supplier-loan');
+const Loan = require('../models/loan');
 
+// Get all supplier loans
 exports.getAllLoans = async (req, res) => {
   try {
-    const loans = await SupplierLoan.getAll();
+    const loans = await Loan.getAll();
     res.status(200).json(loans);
   } catch (error) {
-    console.error('Error getting loans:', error);
-    res.status(500).json({ message: 'Error fetching loans', error: error.message });
+    console.error('Error fetching supplier loans:', error);
+    res.status(500).json({ message: 'Error fetching supplier loans', error: error.message });
   }
 };
 
+// Get loans by supplier ID
+exports.getLoansBySupplier = async (req, res) => {
+  try {
+    const loans = await Loan.getBySupplier(req.params.supplierId);
+    if (loans.length === 0) {
+      return res.status(404).json({ message: 'No loans found for this supplier' });
+    }
+    res.status(200).json(loans);
+  } catch (error) {
+    console.error('Error fetching supplier loans:', error);
+    res.status(500).json({ message: 'Error fetching supplier loans', error: error.message });
+  }
+};
+
+// Get loan by ID
 exports.getLoanById = async (req, res) => {
   try {
-    const loan = await SupplierLoan.getById(req.params.id);
+    const loan = await Loan.getById(req.params.id);
     if (!loan) {
       return res.status(404).json({ message: 'Loan not found' });
     }
     res.status(200).json(loan);
   } catch (error) {
-    console.error('Error getting loan:', error);
+    console.error('Error fetching loan:', error);
     res.status(500).json({ message: 'Error fetching loan', error: error.message });
   }
 };
 
-exports.getLoansBySupplier = async (req, res) => {
-  try {
-    const loans = await SupplierLoan.getBySupplierId(req.params.supplierId);
-    res.status(200).json(loans);
-  } catch (error) {
-    console.error('Error getting supplier loans:', error);
-    res.status(500).json({ message: 'Error fetching supplier loans', error: error.message });
-  }
-};
-
+// Create a new loan
 exports.createLoan = async (req, res) => {
   try {
-    // Validate required fields
-    const requiredFields = ['S_RegisterID', 'Loan_Amount', 'Duration', 'PurposeOfLoan'];
-    for (const field of requiredFields) {
-      if (!req.body[field]) {
-        return res.status(400).json({ message: `${field} is required` });
-      }
+    const loanData = req.body;
+
+    if (!loanData.S_RegisterID || !loanData.Loan_Amount) {
+      return res.status(400).json({ message: 'Supplier ID and Loan Amount are required' });
     }
-    
-    await SupplierLoan.create(req.body);
-    res.status(201).json({ message: 'Loan created successfully' });
+
+    const newLoan = await Loan.create(loanData);
+    res.status(201).json(newLoan);
   } catch (error) {
     console.error('Error creating loan:', error);
     res.status(500).json({ message: 'Error creating loan', error: error.message });
   }
 };
 
-exports.updateLoanStatus = async (req, res) => {
+// Update a loan
+exports.updateLoan = async (req, res) => {
   try {
-    const { status } = req.body;
-    
-    if (!status) {
-      return res.status(400).json({ message: 'Status is required' });
+    const updated = await Loan.update(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ message: 'Loan not found' });
     }
-    
-    const loan = await SupplierLoan.getById(req.params.id);
-    if (!loan) {
-      
+    const updatedLoan = await Loan.getById(req.params.id);
+    res.status(200).json(updatedLoan);
+  } catch (error) {
+    console.error('Error updating loan:', error);
+    res.status(500).json({ message: 'Error updating loan', error: error.message });
+  }
+};
+
+// Delete a loan
+exports.deleteLoan = async (req, res) => {
+  try {
+    const deleted = await Loan.delete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Loan not found' });
+    }
+    res.status(200).json({ message: 'Loan deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting loan:', error);
+    res.status(500).json({ message: 'Error deleting loan', error: error.message });
+  }
+};
+
+// Get loan statistics
+exports.getLoanStatistics = async (req, res) => {
+  try {
+    const stats = await Loan.getStatistics();
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error('Error fetching loan statistics:', error);
+    res.status(500).json({ message: 'Error fetching loan statistics', error: error.message });
+  }
+};
