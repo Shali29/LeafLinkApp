@@ -1,4 +1,5 @@
-const db = require('../config/database');
+// teaPacketsFertilizers.js (ESM version)
+import db from '../config/database.js';
 
 class TeaPacketsFertilizers {
   static getAll() {
@@ -55,33 +56,24 @@ class TeaPacketsFertilizers {
           Total_Items, Total_TeaPackets, Total_OtherItems
         ) VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?)
       `;
-      
-      // Set default values if not provided
+
       orderData.Order_Status = orderData.Order_Status || 'Pending';
       orderData.Total_Items = orderData.Total_Items || orderData.Qty;
-      
-      // Determine if the product is a tea packet or other item based on product data
-      // This would require additional logic based on your classification system
-      // For now, assuming all are set to 0 and need to be updated with correct values
       orderData.Total_TeaPackets = orderData.Total_TeaPackets || 0;
       orderData.Total_OtherItems = orderData.Total_OtherItems || orderData.Qty;
-      
-      db.query(
-        query,
-        [
-          orderData.S_RegisterID,
-          orderData.ProductID,
-          orderData.Qty,
-          orderData.Order_Status,
-          orderData.Total_Items,
-          orderData.Total_TeaPackets,
-          orderData.Total_OtherItems
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
+
+      db.query(query, [
+        orderData.S_RegisterID,
+        orderData.ProductID,
+        orderData.Qty,
+        orderData.Order_Status,
+        orderData.Total_Items,
+        orderData.Total_TeaPackets,
+        orderData.Total_OtherItems
+      ], (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      });
     });
   }
 
@@ -111,24 +103,20 @@ class TeaPacketsFertilizers {
           Total_OtherItems = ?
         WHERE Order_ID = ?
       `;
-      
-      db.query(
-        query,
-        [
-          orderData.S_RegisterID,
-          orderData.ProductID,
-          orderData.Qty,
-          orderData.Order_Status,
-          orderData.Total_Items,
-          orderData.Total_TeaPackets,
-          orderData.Total_OtherItems,
-          id
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
+
+      db.query(query, [
+        orderData.S_RegisterID,
+        orderData.ProductID,
+        orderData.Qty,
+        orderData.Order_Status,
+        orderData.Total_Items,
+        orderData.Total_TeaPackets,
+        orderData.Total_OtherItems,
+        id
+      ], (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      });
     });
   }
 
@@ -142,4 +130,4 @@ class TeaPacketsFertilizers {
   }
 }
 
-module.exports = TeaPacketsFertilizers;
+export default TeaPacketsFertilizers;
