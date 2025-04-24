@@ -1,5 +1,5 @@
-const Supplier = require('../models/supplier');
-const jwt = require('jsonwebtoken');
+import Supplier from '../models/supplier.js';
+import jwt from 'jsonwebtoken';
 
 // Helper function to generate JWT token
 const generateToken = (supplier) => {
@@ -10,7 +10,7 @@ const generateToken = (supplier) => {
   );
 };
 
-exports.getAllSuppliers = async (req, res) => {
+export const getAllSuppliers = async (req, res) => {
   try {
     const suppliers = await Supplier.getAll();
     res.status(200).json(suppliers);
@@ -20,7 +20,7 @@ exports.getAllSuppliers = async (req, res) => {
   }
 };
 
-exports.getSupplierById = async (req, res) => {
+export const getSupplierById = async (req, res) => {
   try {
     const supplier = await Supplier.getById(req.params.id);
     if (!supplier) {
@@ -33,7 +33,7 @@ exports.getSupplierById = async (req, res) => {
   }
 };
 
-exports.createSupplier = async (req, res) => {
+export const createSupplier = async (req, res) => {
   try {
     // Validate required fields
     const requiredFields = ['S_RegisterID', 'S_FullName', 'S_Address', 'S_ContactNo', 'AccountNumber', 'BankName', 'Branch', 'Email', 'Username', 'password'];
@@ -51,7 +51,7 @@ exports.createSupplier = async (req, res) => {
   }
 };
 
-exports.updateSupplier = async (req, res) => {
+export const updateSupplier = async (req, res) => {
   try {
     const supplier = await Supplier.getById(req.params.id);
     if (!supplier) {
@@ -66,7 +66,7 @@ exports.updateSupplier = async (req, res) => {
   }
 };
 
-exports.deleteSupplier = async (req, res) => {
+export const deleteSupplier = async (req, res) => {
   try {
     const supplier = await Supplier.getById(req.params.id);
     if (!supplier) {
@@ -81,7 +81,7 @@ exports.deleteSupplier = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     
