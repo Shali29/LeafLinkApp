@@ -1,4 +1,4 @@
-const db = require('../config/database');
+import db from '../config/database.js';
 
 class SupplierLoan {
   static getAll() {
@@ -150,4 +150,4 @@ class SupplierLoan {
   }
 }
 
-module.exports = SupplierLoan;
+export default SupplierLoan;
