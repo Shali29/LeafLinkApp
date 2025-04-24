@@ -1,6 +1,6 @@
-const Product = require('../models/products');
+import Product from '../models/products.js';
 
-exports.getAllProducts = async (req, res) => {
+export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.getAll();
     res.status(200).json(products);
@@ -10,7 +10,7 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-exports.getProductById = async (req, res) => {
+export const getProductById = async (req, res) => {
   try {
     const product = await Product.getById(req.params.id);
     if (!product) {
@@ -23,16 +23,15 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-exports.createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
-    // Validate required fields
     const requiredFields = ['ProductID', 'ProductName', 'Rate_per_Bag', 'Stock_bag'];
     for (const field of requiredFields) {
       if (!req.body[field]) {
         return res.status(400).json({ message: `${field} is required` });
       }
     }
-    
+
     await Product.create(req.body);
     res.status(201).json({ message: 'Product created successfully' });
   } catch (error) {
@@ -41,13 +40,13 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-exports.updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
     const product = await Product.getById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
+
     await Product.update(req.params.id, req.body);
     res.status(200).json({ message: 'Product updated successfully' });
   } catch (error) {
@@ -56,19 +55,19 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-exports.updateProductStock = async (req, res) => {
+export const updateProductStock = async (req, res) => {
   try {
     const { quantity } = req.body;
-    
+
     if (!quantity || isNaN(quantity) || quantity <= 0) {
       return res.status(400).json({ message: 'Valid quantity is required' });
     }
-    
+
     const product = await Product.getById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
+
     await Product.updateStock(req.params.id, quantity);
     res.status(200).json({ message: 'Product stock updated successfully' });
   } catch (error) {
@@ -77,13 +76,13 @@ exports.updateProductStock = async (req, res) => {
   }
 };
 
-exports.deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.getById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
+
     await Product.delete(req.params.id);
     res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
