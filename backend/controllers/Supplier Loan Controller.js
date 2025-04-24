@@ -1,7 +1,7 @@
-const Loan = require('../models/loan');
+import Loan from '../models/loan.js';
 
 // Get all supplier loans
-exports.getAllLoans = async (req, res) => {
+export const getAllLoans = async (req, res) => {
   try {
     const loans = await Loan.getAll();
     res.status(200).json(loans);
@@ -12,7 +12,7 @@ exports.getAllLoans = async (req, res) => {
 };
 
 // Get loans by supplier ID
-exports.getLoansBySupplier = async (req, res) => {
+export const getLoansBySupplier = async (req, res) => {
   try {
     const loans = await Loan.getBySupplier(req.params.supplierId);
     if (loans.length === 0) {
@@ -26,7 +26,7 @@ exports.getLoansBySupplier = async (req, res) => {
 };
 
 // Get loan by ID
-exports.getLoanById = async (req, res) => {
+export const getLoanById = async (req, res) => {
   try {
     const loan = await Loan.getById(req.params.id);
     if (!loan) {
@@ -40,7 +40,7 @@ exports.getLoanById = async (req, res) => {
 };
 
 // Create a new loan
-exports.createLoan = async (req, res) => {
+export const createLoan = async (req, res) => {
   try {
     const loanData = req.body;
 
@@ -57,7 +57,7 @@ exports.createLoan = async (req, res) => {
 };
 
 // Update a loan
-exports.updateLoan = async (req, res) => {
+export const updateLoan = async (req, res) => {
   try {
     const updated = await Loan.update(req.params.id, req.body);
     if (!updated) {
@@ -72,7 +72,7 @@ exports.updateLoan = async (req, res) => {
 };
 
 // Delete a loan
-exports.deleteLoan = async (req, res) => {
+export const deleteLoan = async (req, res) => {
   try {
     const deleted = await Loan.delete(req.params.id);
     if (!deleted) {
@@ -86,7 +86,7 @@ exports.deleteLoan = async (req, res) => {
 };
 
 // Get loan statistics
-exports.getLoanStatistics = async (req, res) => {
+export const getLoanStatistics = async (req, res) => {
   try {
     const stats = await Loan.getStatistics();
     res.status(200).json(stats);
