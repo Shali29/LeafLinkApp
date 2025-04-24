@@ -1,4 +1,4 @@
-const db = require('../config/database');
+import db from '../config/database.js';
 
 class SupplierCollection {
   static getAll() {
@@ -123,4 +123,4 @@ class SupplierCollection {
   }
 }
 
-module.exports = SupplierCollection;
+export default SupplierCollection;
