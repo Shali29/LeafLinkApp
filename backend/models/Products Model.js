@@ -1,4 +1,4 @@
-const db = require('../config/database');
+import db from '../config/database.js';
 
 class Product {
   static getAll() {
@@ -101,4 +101,4 @@ class Product {
   }
 }
 
-module.exports = Product;
+export default Product;
