@@ -6,8 +6,7 @@ import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
 const DriverLogin = ({ navigation }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [registerid, setRegisterId] = useState('');
 
   return (
     <View style={styles.container}>
@@ -26,23 +25,14 @@ const DriverLogin = ({ navigation }) => {
       </View>
       
       <View style={styles.formContainer}>
-        <Text style={styles.title}>User Name:</Text>
+        <Text style={styles.title}>Register ID:</Text>
         <Input
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="RegisterID"
+          value={registerid}
+          onChangeText={setRegisterId}
           style={styles.input}
         />
-        
-        <Text style={styles.title}>Password:</Text>
-        <Input
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-        
+
         <Button
           title="Login"
           onPress={() => navigation.navigate('DriverHome')}
