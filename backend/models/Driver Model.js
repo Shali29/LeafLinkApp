@@ -1,4 +1,4 @@
-const db = require('../config/database');
+import db from '../config/database.js';
 
 class Driver {
   static getAll() {
@@ -27,7 +27,7 @@ class Driver {
           D_RegisterID, D_FullName, D_ContactNumber, Email, VehicalNumber, Route, Serial_Code
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
-      
+
       db.query(
         query,
         [
@@ -59,7 +59,7 @@ class Driver {
           Serial_Code = ?
         WHERE D_RegisterID = ?
       `;
-      
+
       db.query(
         query,
         [
@@ -89,4 +89,4 @@ class Driver {
   }
 }
 
-module.exports = Driver;
+export default Driver;
