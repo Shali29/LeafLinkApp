@@ -1,7 +1,7 @@
-const SupplierAdvance = require('../models/supplierAdvance');
+import SupplierAdvance from '../models/supplierAdvance.js';
 
 // Get all supplier advances
-exports.getAllAdvances = async (req, res) => {
+export const getAllAdvances = async (req, res) => {
   try {
     const advances = await SupplierAdvance.getAll();
     res.status(200).json(advances);
@@ -12,7 +12,7 @@ exports.getAllAdvances = async (req, res) => {
 };
 
 // Get supplier advances by supplier ID
-exports.getAdvancesBySupplier = async (req, res) => {
+export const getAdvancesBySupplier = async (req, res) => {
   try {
     const advances = await SupplierAdvance.getBySupplierId(req.params.supplierId);
     if (advances.length === 0) {
@@ -26,7 +26,7 @@ exports.getAdvancesBySupplier = async (req, res) => {
 };
 
 // Get a single advance by ID
-exports.getAdvanceById = async (req, res) => {
+export const getAdvanceById = async (req, res) => {
   try {
     const advance = await SupplierAdvance.getById(req.params.id);
     if (!advance) {
@@ -40,7 +40,7 @@ exports.getAdvanceById = async (req, res) => {
 };
 
 // Create a new advance
-exports.createAdvance = async (req, res) => {
+export const createAdvance = async (req, res) => {
   try {
     const { S_RegisterID, Advance_Amount, Date, Status } = req.body;
 
@@ -63,7 +63,7 @@ exports.createAdvance = async (req, res) => {
 };
 
 // Update an advance
-exports.updateAdvance = async (req, res) => {
+export const updateAdvance = async (req, res) => {
   try {
     const advance = await SupplierAdvance.getById(req.params.id);
     if (!advance) {
@@ -79,7 +79,7 @@ exports.updateAdvance = async (req, res) => {
 };
 
 // Delete an advance
-exports.deleteAdvance = async (req, res) => {
+export const deleteAdvance = async (req, res) => {
   try {
     const advance = await SupplierAdvance.getById(req.params.id);
     if (!advance) {
@@ -95,7 +95,7 @@ exports.deleteAdvance = async (req, res) => {
 };
 
 // Update advance status
-exports.updateAdvanceStatus = async (req, res) => {
+export const updateAdvanceStatus = async (req, res) => {
   try {
     const { Status } = req.body;
     if (!Status || !['Pending', 'Transfered'].includes(Status)) {
@@ -116,7 +116,7 @@ exports.updateAdvanceStatus = async (req, res) => {
 };
 
 // Get advance statistics
-exports.getAdvanceStatistics = async (req, res) => {
+export const getAdvanceStatistics = async (req, res) => {
   try {
     const stats = await SupplierAdvance.getStatistics();
     res.status(200).json(stats);
