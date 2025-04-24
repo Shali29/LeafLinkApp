@@ -1,6 +1,6 @@
-const SupplierCollection = require('../models/supplier-collection');
+import SupplierCollection from '../models/supplier-collection.js';
 
-exports.getAllCollections = async (req, res) => {
+export const getAllCollections = async (req, res) => {
   try {
     const collections = await SupplierCollection.getAll();
     res.status(200).json(collections);
@@ -10,7 +10,7 @@ exports.getAllCollections = async (req, res) => {
   }
 };
 
-exports.getCollectionById = async (req, res) => {
+export const getCollectionById = async (req, res) => {
   try {
     const collection = await SupplierCollection.getById(req.params.id);
     if (!collection) {
@@ -23,7 +23,7 @@ exports.getCollectionById = async (req, res) => {
   }
 };
 
-exports.getCollectionsBySupplier = async (req, res) => {
+export const getCollectionsBySupplier = async (req, res) => {
   try {
     const collections = await SupplierCollection.getBySupplierId(req.params.supplierId);
     res.status(200).json(collections);
@@ -33,7 +33,7 @@ exports.getCollectionsBySupplier = async (req, res) => {
   }
 };
 
-exports.createCollection = async (req, res) => {
+export const createCollection = async (req, res) => {
   try {
     // Validate required fields
     const requiredFields = ['S_RegisterID', 'Current_Rate', 'TeaBagWeight_kg', 'Water_kg', 'Bag_kg'];
@@ -51,7 +51,7 @@ exports.createCollection = async (req, res) => {
   }
 };
 
-exports.updateCollection = async (req, res) => {
+export const updateCollection = async (req, res) => {
   try {
     const collection = await SupplierCollection.getById(req.params.id);
     if (!collection) {
@@ -66,7 +66,7 @@ exports.updateCollection = async (req, res) => {
   }
 };
 
-exports.deleteCollection = async (req, res) => {
+export const deleteCollection = async (req, res) => {
   try {
     const collection = await SupplierCollection.getById(req.params.id);
     if (!collection) {
