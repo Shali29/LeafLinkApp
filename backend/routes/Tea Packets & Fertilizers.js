@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import teaPacketsFertilizersController from '../controllers/teaPacketsFertilizersController.js';
+
 const router = express.Router();
-const teaPacketsFertilizersController = require('../controllers/teaPacketsFertilizersController');
 
 // GET all orders
 router.get('/', teaPacketsFertilizersController.getAllOrders);
@@ -26,4 +27,4 @@ router.put('/:id/status', teaPacketsFertilizersController.updateOrderStatus);
 // GET order statistics
 router.get('/stats/summary', teaPacketsFertilizersController.getOrderStatistics);
 
-module.exports = router;
+export default router;
