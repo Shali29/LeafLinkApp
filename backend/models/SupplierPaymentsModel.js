@@ -1,5 +1,5 @@
 // import db connection
-import db from '../config/database.js';
+import db from '../config/db.js';
 
 class SupplierPayments {
   static getAll() {

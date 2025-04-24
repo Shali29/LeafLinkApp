@@ -4,8 +4,8 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { testConnection } from './config/db.js';
 
-import supplierRoutes from './routes/supplierRoutes.js';
-import driverRoutes from './routes/driverRoutes.js';
+import supplierRoutes from './routes/SupplierRoutes.js';
+import driverRoutes from './routes/DriverRoutes.js';
 import productsRoutes from './routes/productsRoutes.js';
 import supplierCollectionRoutes from './routes/supplierCollectionRoutes.js';
 import teaPacketsFertilizersRoutes from './routes/teaPacketsFertilizersRoutes.js';

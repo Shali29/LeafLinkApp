@@ -1,4 +1,4 @@
-import db from '../config/database.js';
+import db from '../config/db.js'; 
 import bcrypt from 'bcrypt';
 
 class Supplier {
