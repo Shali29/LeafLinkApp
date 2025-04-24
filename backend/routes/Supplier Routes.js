@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import supplierController from '../controllers/supplierController.js';
+
 const router = express.Router();
-const supplierController = require('../controllers/supplierController');
 
 // GET all suppliers
 router.get('/', supplierController.getAllSuppliers);
@@ -20,4 +21,4 @@ router.delete('/:id', supplierController.deleteSupplier);
 // POST login supplier
 router.post('/login', supplierController.loginSupplier);
 
-module.exports = router;
+export default router;
