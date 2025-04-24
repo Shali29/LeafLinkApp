@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import supplierCollectionController from '../controllers/supplierCollectionController.js';
+
 const router = express.Router();
-const supplierCollectionController = require('../controllers/supplierCollectionController');
 
 // GET all collections
 router.get('/', supplierCollectionController.getAllCollections);
@@ -23,4 +24,4 @@ router.delete('/:id', supplierCollectionController.deleteCollection);
 // GET collection statistics
 router.get('/stats/summary', supplierCollectionController.getCollectionStatistics);
 
-module.exports = router;
+export default router;
