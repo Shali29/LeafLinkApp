@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import supplierPaymentsController from '../controllers/supplierPaymentsController.js';
+
 const router = express.Router();
-const supplierPaymentsController = require('../controllers/supplierPaymentsController');
 
 // GET all payments
 router.get('/', supplierPaymentsController.getAllPayments);
@@ -29,4 +30,4 @@ router.get('/calculate/:supplierId', supplierPaymentsController.calculatePayment
 // GET payment statistics
 router.get('/stats/summary', supplierPaymentsController.getPaymentStatistics);
 
-module.exports = router;
+export default router;
