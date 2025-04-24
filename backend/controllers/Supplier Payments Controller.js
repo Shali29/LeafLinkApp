@@ -1,6 +1,6 @@
-const SupplierPayment = require('../models/supplierPayment');
+import SupplierPayment from '../models/supplierPayment.js';
 
-exports.getAllPayments = async (req, res) => {
+export const getAllPayments = async (req, res) => {
   try {
     const payments = await SupplierPayment.getAll();
     res.status(200).json(payments);
@@ -10,7 +10,7 @@ exports.getAllPayments = async (req, res) => {
   }
 };
 
-exports.getPaymentsBySupplier = async (req, res) => {
+export const getPaymentsBySupplier = async (req, res) => {
   try {
     const payments = await SupplierPayment.getBySupplierId(req.params.supplierId);
     if (payments.length === 0) {
@@ -23,7 +23,7 @@ exports.getPaymentsBySupplier = async (req, res) => {
   }
 };
 
-exports.getPaymentById = async (req, res) => {
+export const getPaymentById = async (req, res) => {
   try {
     const payment = await SupplierPayment.getById(req.params.id);
     if (!payment) {
@@ -36,7 +36,7 @@ exports.getPaymentById = async (req, res) => {
   }
 };
 
-exports.createPayment = async (req, res) => {
+export const createPayment = async (req, res) => {
   try {
     const newPayment = await SupplierPayment.create(req.body);
     res.status(201).json(newPayment);
@@ -46,7 +46,7 @@ exports.createPayment = async (req, res) => {
   }
 };
 
-exports.updatePayment = async (req, res) => {
+export const updatePayment = async (req, res) => {
   try {
     const updated = await SupplierPayment.update(req.params.id, req.body);
     if (!updated) {
@@ -60,7 +60,7 @@ exports.updatePayment = async (req, res) => {
   }
 };
 
-exports.deletePayment = async (req, res) => {
+export const deletePayment = async (req, res) => {
   try {
     const deleted = await SupplierPayment.delete(req.params.id);
     if (!deleted) {
@@ -73,7 +73,7 @@ exports.deletePayment = async (req, res) => {
   }
 };
 
-exports.updatePaymentStatus = async (req, res) => {
+export const updatePaymentStatus = async (req, res) => {
   try {
     const updated = await SupplierPayment.updateStatus(req.params.id, req.body.Status);
     if (!updated) {
@@ -87,7 +87,7 @@ exports.updatePaymentStatus = async (req, res) => {
   }
 };
 
-exports.calculatePayment = async (req, res) => {
+export const calculatePayment = async (req, res) => {
   try {
     const result = await SupplierPayment.calculate(req.params.supplierId);
     res.status(200).json(result);
@@ -97,7 +97,7 @@ exports.calculatePayment = async (req, res) => {
   }
 };
 
-exports.getPaymentStatistics = async (req, res) => {
+export const getPaymentStatistics = async (req, res) => {
   try {
     const stats = await SupplierPayment.getStatistics();
     res.status(200).json(stats);
