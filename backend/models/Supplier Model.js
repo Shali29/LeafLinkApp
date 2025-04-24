@@ -1,5 +1,5 @@
-const db = require('../config/database');
-const bcrypt = require('bcrypt');
+import db from '../config/database.js';
+import bcrypt from 'bcrypt';
 
 class Supplier {
   static getAll() {
@@ -133,4 +133,4 @@ class Supplier {
   }
 }
 
-module.exports = Supplier;
+export default Supplier;
