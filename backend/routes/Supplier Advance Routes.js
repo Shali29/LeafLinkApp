@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import supplierAdvanceController from '../controllers/supplierAdvanceController.js';
+
 const router = express.Router();
-const supplierAdvanceController = require('../controllers/supplierAdvanceController');
 
 // GET all advances
 router.get('/', supplierAdvanceController.getAllAdvances);
@@ -26,4 +27,4 @@ router.put('/:id/status', supplierAdvanceController.updateAdvanceStatus);
 // GET advance statistics
 router.get('/stats/summary', supplierAdvanceController.getAdvanceStatistics);
 
-module.exports = router;
+export default router;
