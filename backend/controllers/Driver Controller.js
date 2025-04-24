@@ -1,6 +1,6 @@
-const Driver = require('../models/driver');
+import Driver from '../models/driver.js';
 
-exports.getAllDrivers = async (req, res) => {
+export const getAllDrivers = async (req, res) => {
   try {
     const drivers = await Driver.getAll();
     res.status(200).json(drivers);
@@ -10,7 +10,7 @@ exports.getAllDrivers = async (req, res) => {
   }
 };
 
-exports.getDriverById = async (req, res) => {
+export const getDriverById = async (req, res) => {
   try {
     const driver = await Driver.getById(req.params.id);
     if (!driver) {
@@ -23,16 +23,15 @@ exports.getDriverById = async (req, res) => {
   }
 };
 
-exports.createDriver = async (req, res) => {
+export const createDriver = async (req, res) => {
   try {
-    // Validate required fields
     const requiredFields = ['D_RegisterID', 'D_FullName', 'D_ContactNumber', 'Email', 'VehicalNumber', 'Route'];
     for (const field of requiredFields) {
       if (!req.body[field]) {
         return res.status(400).json({ message: `${field} is required` });
       }
     }
-    
+
     await Driver.create(req.body);
     res.status(201).json({ message: 'Driver created successfully' });
   } catch (error) {
@@ -41,13 +40,13 @@ exports.createDriver = async (req, res) => {
   }
 };
 
-exports.updateDriver = async (req, res) => {
+export const updateDriver = async (req, res) => {
   try {
     const driver = await Driver.getById(req.params.id);
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
     }
-    
+
     await Driver.update(req.params.id, req.body);
     res.status(200).json({ message: 'Driver updated successfully' });
   } catch (error) {
@@ -56,13 +55,13 @@ exports.updateDriver = async (req, res) => {
   }
 };
 
-exports.deleteDriver = async (req, res) => {
+export const deleteDriver = async (req, res) => {
   try {
     const driver = await Driver.getById(req.params.id);
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
     }
-    
+
     await Driver.delete(req.params.id);
     res.status(200).json({ message: 'Driver deleted successfully' });
   } catch (error) {
