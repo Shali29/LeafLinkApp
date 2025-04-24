@@ -1,4 +1,5 @@
-const db = require('../config/database');
+// import db connection
+import db from '../config/database.js';
 
 class SupplierPayments {
   static getAll() {
@@ -45,12 +46,6 @@ class SupplierPayments {
 
   static calculatePaymentData(supplierId) {
     return new Promise((resolve, reject) => {
-      // This is a complex operation that would:
-      // 1. Get total tea collection amount (from Supplier_Collection)
-      // 2. Get total loans amount (from Supplier_Loan)
-      // 3. Get total advance amount (from Supplier_Advance)
-      // 4. Get total product orders amount (from TeaPackets_Fertilizers)
-      
       db.query(`
         SELECT 
           s.S_RegisterID,
@@ -73,7 +68,6 @@ class SupplierPayments {
         if (err) return reject(err);
         
         if (results.length === 0) {
-          // If no collections, still need to get supplier data
           db.query(`
             SELECT 
               S_RegisterID,
@@ -100,13 +94,13 @@ class SupplierPayments {
                 LoanAmount: 0,
                 AdvanceAmount: 0,
                 ProductsAmount: 0,
-                TransportCharge: 100,  // Default value
+                TransportCharge: 100,
                 FinalTotal: 0
               });
             }
             
             const data = noCollectionResults[0];
-            data.TransportCharge = 100;  // Default value
+            data.TransportCharge = 100;
             data.FinalTotal = data.GrossIncome - data.LoanAmount - data.AdvanceAmount - data.ProductsAmount - data.TransportCharge;
             
             resolve(data);
@@ -115,7 +109,7 @@ class SupplierPayments {
         }
         
         const data = results[0];
-        data.TransportCharge = 100;  // Default value
+        data.TransportCharge = 100;
         data.FinalTotal = data.GrossIncome - data.LoanAmount - data.AdvanceAmount - data.ProductsAmount - data.TransportCharge;
         
         resolve(data);
@@ -211,4 +205,4 @@ class SupplierPayments {
   }
 }
 
-module.exports = SupplierPayments;
+export default SupplierPayments;
