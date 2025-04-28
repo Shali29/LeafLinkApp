@@ -1,54 +1,48 @@
 import db from '../config/db.js'; 
 
 class DriverModel {
-  static getAll() {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM Driver', (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
+  static async getAll() {
+    try {
+      const [rows] = await db.query('SELECT * FROM Driver');
+      return rows;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM Driver WHERE D_RegisterID = ?', [id], (err, results) => {
-        if (err) return reject(err);
-        if (results.length === 0) return resolve(null);
-        resolve(results[0]);
-      });
-    });
+  static async getById(id) {
+    try {
+      const [rows] = await db.query('SELECT * FROM Driver WHERE D_RegisterID = ?', [id]);
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static create(driverData) {
-    return new Promise((resolve, reject) => {
+  static async create(driverData) {
+    try {
       const query = `
         INSERT INTO Driver (
           D_RegisterID, D_FullName, D_ContactNumber, Email, VehicalNumber, Route, Serial_Code
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
-
-      db.query(
-        query,
-        [
-          driverData.D_RegisterID,
-          driverData.D_FullName,
-          driverData.D_ContactNumber,
-          driverData.Email,
-          driverData.VehicalNumber,
-          driverData.Route,
-          driverData.Serial_Code
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
-    });
+      const [result] = await db.query(query, [
+        driverData.D_RegisterID,
+        driverData.D_FullName,
+        driverData.D_ContactNumber,
+        driverData.Email,
+        driverData.VehicalNumber,
+        driverData.Route,
+        driverData.Serial_Code,
+      ]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static update(id, driverData) {
-    return new Promise((resolve, reject) => {
+  static async update(id, driverData) {
+    try {
       const query = `
         UPDATE Driver SET 
           D_FullName = ?, 
@@ -59,33 +53,28 @@ class DriverModel {
           Serial_Code = ?
         WHERE D_RegisterID = ?
       `;
-
-      db.query(
-        query,
-        [
-          driverData.D_FullName,
-          driverData.D_ContactNumber,
-          driverData.Email,
-          driverData.VehicalNumber,
-          driverData.Route,
-          driverData.Serial_Code,
-          id
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
-    });
+      const [result] = await db.query(query, [
+        driverData.D_FullName,
+        driverData.D_ContactNumber,
+        driverData.Email,
+        driverData.VehicalNumber,
+        driverData.Route,
+        driverData.Serial_Code,
+        id,
+      ]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM Driver WHERE D_RegisterID = ?', [id], (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
+  static async delete(id) {
+    try {
+      const [result] = await db.query('DELETE FROM Driver WHERE D_RegisterID = ?', [id]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

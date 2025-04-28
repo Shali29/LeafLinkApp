@@ -2,68 +2,64 @@ import db from '../config/db.js';
 import bcrypt from 'bcrypt';
 
 class SupplierModel {
-  static getAll() {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT S_RegisterID, S_FullName, S_Address, S_ContactNo, Email FROM Supplier', (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });SS
-    });
+  // Fetch all suppliers
+  static async getAll() {
+    try {
+      const [results] = await db.query('SELECT S_RegisterID, S_FullName, S_Address, S_ContactNo, Email FROM Supplier');
+      return results;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT S_RegisterID, S_FullName, S_Address, S_ContactNo, Email, AccountNumber, BankName, Branch FROM Supplier WHERE S_RegisterID = ?', 
-        [id], 
-        (err, results) => {
-          if (err) return reject(err);
-          if (results.length === 0) return resolve(null);
-          resolve(results[0]);
-        }
+  // Fetch a supplier by ID
+  static async getById(id) {
+    try {
+      const [results] = await db.query('SELECT S_RegisterID, S_FullName, S_Address, S_ContactNo, Email, AccountNumber, BankName, Branch FROM Supplier WHERE S_RegisterID = ?', [id]);
+      return results.length === 0 ? null : results[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Create a new supplier
+  static async create(supplierData) {
+    try {
+      // Hash password
+      const hashedPassword = await bcrypt.hash(supplierData.password, 10);
+      
+      const query = `
+        INSERT INTO Supplier (
+          S_RegisterID, S_FullName, S_Address, S_ContactNo, 
+          AccountNumber, BankName, Branch, Email, Username, hash_Password
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      
+      const [result] = await db.query(
+        query,
+        [
+          supplierData.S_RegisterID,
+          supplierData.S_FullName,
+          supplierData.S_Address,
+          supplierData.S_ContactNo,
+          supplierData.AccountNumber,
+          supplierData.BankName,
+          supplierData.Branch,
+          supplierData.Email,
+          supplierData.Username,
+          hashedPassword
+        ]
       );
-    });
+      
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static create(supplierData) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Hash password
-        const hashedPassword = await bcrypt.hash(supplierData.password, 10);
-        
-        const query = `
-          INSERT INTO Supplier (
-            S_RegisterID, S_FullName, S_Address, S_ContactNo, 
-            AccountNumber, BankName, Branch, Email, Username, hash_Password
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
-        
-        db.query(
-          query,
-          [
-            supplierData.S_RegisterID,
-            supplierData.S_FullName,
-            supplierData.S_Address,
-            supplierData.S_ContactNo,
-            supplierData.AccountNumber,
-            supplierData.BankName,
-            supplierData.Branch,
-            supplierData.Email,
-            supplierData.Username,
-            hashedPassword
-          ],
-          (err, result) => {
-            if (err) return reject(err);
-            resolve(result);
-          }
-        );
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  static update(id, supplierData) {
-    return new Promise((resolve, reject) => {
+  // Update an existing supplier
+  static async update(id, supplierData) {
+    try {
       const query = `
         UPDATE Supplier SET 
           S_FullName = ?, 
@@ -76,7 +72,7 @@ class SupplierModel {
         WHERE S_RegisterID = ?
       `;
       
-      db.query(
+      const [result] = await db.query(
         query,
         [
           supplierData.S_FullName,
@@ -87,49 +83,43 @@ class SupplierModel {
           supplierData.Branch,
           supplierData.Email,
           id
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
+        ]
       );
-    });
+      
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM Supplier WHERE S_RegisterID = ?', [id], (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
+  // Delete a supplier by ID
+  static async delete(id) {
+    try {
+      const [result] = await db.query('DELETE FROM Supplier WHERE S_RegisterID = ?', [id]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static authenticate(username, password) {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT S_RegisterID, Username, hash_Password FROM Supplier WHERE Username = ?', 
-        [username], 
-        async (err, results) => {
-          if (err) return reject(err);
-          if (results.length === 0) return resolve(null);
-          
-          const supplier = results[0];
-          
-          try {
-            const match = await bcrypt.compare(password, supplier.hash_Password);
-            if (match) {
-              // Don't return the password hash
-              delete supplier.hash_Password;
-              resolve(supplier);
-            } else {
-              resolve(null);
-            }
-          } catch (error) {
-            reject(error);
-          }
-        }
-      );
-    });
+  // Authenticate supplier based on username and password
+  static async authenticate(username, password) {
+    try {
+      const [results] = await db.query('SELECT S_RegisterID, Username, hash_Password FROM Supplier WHERE Username = ?', [username]);
+      if (results.length === 0) return null;
+      
+      const supplier = results[0];
+      const match = await bcrypt.compare(password, supplier.hash_Password);
+      
+      if (match) {
+        // Don't return the password hash
+        delete supplier.hash_Password;
+        return supplier;
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

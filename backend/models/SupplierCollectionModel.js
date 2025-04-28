@@ -1,50 +1,58 @@
 import db from '../config/db.js'; 
 
 class SupplierCollectionModel {
-  static getAll() {
-    return new Promise((resolve, reject) => {
-      db.query(`
+  // Fetch all supplier collections with supplier name
+  static async getAll() {
+    try {
+      const [results] = await db.query(`
         SELECT sc.*, s.S_FullName 
         FROM Supplier_Collection sc
         JOIN Supplier s ON sc.S_RegisterID = s.S_RegisterID
         ORDER BY sc.DateTime DESC
-      `, (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
+      `);
+      return results;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
-      db.query(`
+  // Fetch a supplier collection by its ID
+  static async getById(id) {
+    try {
+      const [results] = await db.query(`
         SELECT sc.*, s.S_FullName 
         FROM Supplier_Collection sc
         JOIN Supplier s ON sc.S_RegisterID = s.S_RegisterID
         WHERE sc.Collection_ID = ?
-      `, [id], (err, results) => {
-        if (err) return reject(err);
-        if (results.length === 0) return resolve(null);
-        resolve(results[0]);
-      });
-    });
+      `, [id]);
+      
+      return results.length === 0 ? null : results[0];
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getBySupplierId(supplierId) {
-    return new Promise((resolve, reject) => {
-      db.query(`
+  // Fetch all collections for a specific supplier
+  static async getBySupplierId(supplierId) {
+    try {
+      const [results] = await db.query(`
         SELECT * FROM Supplier_Collection 
         WHERE S_RegisterID = ?
         ORDER BY DateTime DESC
-      `, [supplierId], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
+      `, [supplierId]);
+      return results;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static create(collectionData) {
-    return new Promise((resolve, reject) => {
+  // Create a new supplier collection
+  static async create(collectionData) {
+    try {
+      // Calculate the balance weight
+      const balanceWeight = collectionData.TeaBagWeight_kg - collectionData.Water_kg - collectionData.Bag_kg;
+      const totalWeight = balanceWeight; // Assuming total weight is the same as balance weight
+
       const query = `
         INSERT INTO Supplier_Collection (
           S_RegisterID, Current_Rate, DateTime, TeaBagWeight_kg, 
@@ -52,35 +60,28 @@ class SupplierCollectionModel {
         ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)
       `;
       
-      // Calculate the balance weight
-      const balanceWeight = collectionData.TeaBagWeight_kg - collectionData.Water_kg - collectionData.Bag_kg;
-      const totalWeight = balanceWeight; // Assuming total weight is the same as balance weight
-      
-      db.query(
-        query,
-        [
-          collectionData.S_RegisterID,
-          collectionData.Current_Rate,
-          collectionData.TeaBagWeight_kg,
-          collectionData.Water_kg,
-          collectionData.Bag_kg,
-          balanceWeight,
-          totalWeight
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
-    });
+      const [result] = await db.query(query, [
+        collectionData.S_RegisterID,
+        collectionData.Current_Rate,
+        collectionData.TeaBagWeight_kg,
+        collectionData.Water_kg,
+        collectionData.Bag_kg,
+        balanceWeight,
+        totalWeight
+      ]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static update(id, collectionData) {
-    return new Promise((resolve, reject) => {
+  // Update an existing supplier collection
+  static async update(id, collectionData) {
+    try {
       // Calculate the balance weight
       const balanceWeight = collectionData.TeaBagWeight_kg - collectionData.Water_kg - collectionData.Bag_kg;
       const totalWeight = balanceWeight; // Assuming total weight is the same as balance weight
-      
+
       const query = `
         UPDATE Supplier_Collection SET 
           S_RegisterID = ?, 
@@ -93,33 +94,30 @@ class SupplierCollectionModel {
         WHERE Collection_ID = ?
       `;
       
-      db.query(
-        query,
-        [
-          collectionData.S_RegisterID,
-          collectionData.Current_Rate,
-          collectionData.TeaBagWeight_kg,
-          collectionData.Water_kg,
-          collectionData.Bag_kg,
-          balanceWeight,
-          totalWeight,
-          id
-        ],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
-    });
+      const [result] = await db.query(query, [
+        collectionData.S_RegisterID,
+        collectionData.Current_Rate,
+        collectionData.TeaBagWeight_kg,
+        collectionData.Water_kg,
+        collectionData.Bag_kg,
+        balanceWeight,
+        totalWeight,
+        id
+      ]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM Supplier_Collection WHERE Collection_ID = ?', [id], (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
+  // Delete a supplier collection by its ID
+  static async delete(id) {
+    try {
+      const [result] = await db.query('DELETE FROM Supplier_Collection WHERE Collection_ID = ?', [id]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
