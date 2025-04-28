@@ -1,27 +1,33 @@
 import express from 'express';
-import supplierLoanController from '../controllers/SupplierLoanController.js';
+import {getAllLoans} from '../controllers/SupplierLoanController.js';
+import {getLoansBySupplier} from '../controllers/SupplierLoanController.js';
+import {getLoanById} from '../controllers/SupplierLoanController.js';
+import { createLoan } from '../controllers/SupplierLoanController.js';
+import { updateLoan } from '../controllers/SupplierLoanController.js';
+import { deleteLoan } from '../controllers/SupplierLoanController.js';
+import { getLoanStatistics } from '../controllers/SupplierLoanController.js';
 
 const router = express.Router();
 
 // GET all loans
-router.get('/', supplierLoanController.getAllLoans);
+router.get('/', getAllLoans);
 
 // GET loans by supplier ID
-router.get('/supplier/:supplierId', supplierLoanController.getLoansBySupplier);
+router.get('/supplier/:supplierId', getLoansBySupplier);
 
 // GET loan by ID
-router.get('/:id', supplierLoanController.getLoanById);
+router.get('/:id', getLoanById);
 
 // POST create new loan
-router.post('/', supplierLoanController.createLoan);
+router.post('/', createLoan);
 
 // PUT update loan
-router.put('/:id', supplierLoanController.updateLoan);
+router.put('/:id', updateLoan);
 
 // DELETE loan
-router.delete('/:id', supplierLoanController.deleteLoan);
+router.delete('/:id', deleteLoan);
 
 // GET loan statistics
-router.get('/stats/summary', supplierLoanController.getLoanStatistics);
+router.get('/stats/summary', getLoanStatistics);
 
 export default router;
