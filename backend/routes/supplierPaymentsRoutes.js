@@ -11,30 +11,30 @@ import { getPaymentStatistics } from '../controllers/SupplierPaymentsController.
 const router = express.Router();
 
 // GET all payments
-router.get('/', getAllPayments);
+router.get('/:AllPayments', getAllPayments);
 
 // GET payments by supplier ID
-router.get('/supplier/:supplierId', getPaymentsBySupplier);
+router.get('/:PaymentsBySupplier', getPaymentsBySupplier);
 
 // GET payment by ID
-router.get('/:id', getPaymentById);
+router.get('/:PaymentById', getPaymentById);
 
 // POST create new payment
-router.post('/', createPayment);
+router.post('/:createPayment', createPayment);
 
 // PUT update payment
-router.put('/:id', updatePayment);
+router.put('/:updatePayment', updatePayment);
 
 // DELETE payment
-router.delete('/:id', deletePayment);
+router.delete('/:deletePayment', deletePayment);
 
 // PUT update payment status
-router.put('/:id/status', updatePaymentStatus);
+router.put('/:updatePaymentStatus', updatePaymentStatus);
 
 // GET calculate payment for supplier
-router.get('/calculate/:supplierId', calculatePayment);
+router.get('/:calculatePayment', calculatePayment);
 
 // GET payment statistics
-router.get('/stats/summary', getPaymentStatistics);
+router.get('/:PaymentStatistics', getPaymentStatistics);
 
 export default router;

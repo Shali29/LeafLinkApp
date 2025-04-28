@@ -9,21 +9,21 @@ import {updateProductStock } from '../controllers/ProductsController.js';
 const router = express.Router();
 
 // GET all products
-router.get('/', getAllProducts);
+router.get('/:AllProducts', getAllProducts);
 
 // GET product by ID
-router.get('/:id', getProductById);
+router.get('/:ProductById', getProductById);
 
 // POST create new product
-router.post('/', createProduct);
+router.post('/:createProduct', createProduct);
 
 // PUT update product
-router.put('/:id', updateProduct);
+router.put('/:updateProduct', updateProduct);
 
 // DELETE product
-router.delete('/:id', deleteProduct);
+router.delete('/:deleteProduct', deleteProduct);
 
 // PUT update product stock
-router.put('/:id/stock', updateProductStock);
+router.put('/:updateProductStock', updateProductStock);
 
 export default router;

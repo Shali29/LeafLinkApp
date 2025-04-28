@@ -9,21 +9,21 @@ import {loginSupplier} from '../controllers/SupplierController';
 const router = express.Router();
 
 // GET all suppliers
-router.get('/', getAllSuppliers);
+router.get('/:AllSuppliers', getAllSuppliers);
 
 // GET supplier by ID
-router.get('/:id', getSupplierById);
+router.get('/:SupplierById', getSupplierById);
 
 // POST create new supplier
-router.post('/', createSupplier);
+router.post('/:createSupplier', createSupplier);
 
 // PUT update supplier
-router.put('/:id', updateSupplier);
+router.put('/:updateSupplier', updateSupplier);
 
 // DELETE supplier
-router.delete('/:id', deleteSupplier);
+router.delete('/:deleteSupplier', deleteSupplier);
 
 // POST login supplier
-router.post('/login', loginSupplier);
+router.post('/loginSupplier', loginSupplier);
 
 export default router;

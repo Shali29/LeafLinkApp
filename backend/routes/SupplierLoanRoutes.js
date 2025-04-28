@@ -10,24 +10,24 @@ import { getLoanStatistics } from '../controllers/SupplierLoanController.js';
 const router = express.Router();
 
 // GET all loans
-router.get('/', getAllLoans);
+router.get('/:AllLoans', getAllLoans);
 
 // GET loans by supplier ID
-router.get('/supplier/:supplierId', getLoansBySupplier);
+router.get('/:LoansBySupplier', getLoansBySupplier);
 
 // GET loan by ID
-router.get('/:id', getLoanById);
+router.get('/:LoanById', getLoanById);
 
 // POST create new loan
-router.post('/', createLoan);
+router.post('/:createLoan', createLoan);
 
 // PUT update loan
-router.put('/:id', updateLoan);
+router.put('/:updateLoan', updateLoan);
 
 // DELETE loan
-router.delete('/:id', deleteLoan);
+router.delete('/:deleteLoan', deleteLoan);
 
 // GET loan statistics
-router.get('/stats/summary', getLoanStatistics);
+router.get('/:LoanStatistics', getLoanStatistics);
 
 export default router;

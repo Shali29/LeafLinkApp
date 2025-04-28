@@ -11,27 +11,27 @@ import {getOrderStatistics} from '../controllers/teaPacketsFertilizersController
 const router = express.Router();
 
 // GET all orders
-router.get('/', getAllOrders);
+router.get('/:Allorders', getAllOrders);
 
 // GET orders by supplier ID
-router.get('/supplier/:supplierId', getOrdersBySupplier);
+router.get('/:OrdersBySupplier', getOrdersBySupplier);
 
 // GET order by ID
-router.get('/:id', getOrderById);
+router.get('/:OrderById', getOrderById);
 
 // POST create new order
-router.post('/', createOrder);
+router.post('/:CreateOrder', createOrder);
 
 // PUT update order
-router.put('/:id', updateOrder);
+router.put('/:updateOrder', updateOrder);
 
 // DELETE order
-router.delete('/:id', deleteOrder);
+router.delete('/:deleteOrder', deleteOrder);
 
 // PUT update order status
-router.put('/:id/status', updateOrderStatus);
+router.put('/:updateOrderStatus', updateOrderStatus);
 
 // GET order statistics
-router.get('/stats/summary', getOrderStatistics);
+router.get('/:OrderStatistics', getOrderStatistics);
 
 export default router;

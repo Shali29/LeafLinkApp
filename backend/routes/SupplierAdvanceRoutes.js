@@ -10,27 +10,27 @@ import { getAdvanceStatistics } from '../controllers/SupplierAdvanceController.j
 const router = express.Router();
 
 // GET all advances
-router.get('/', getAllAdvances);
+router.get('/:AllAdvances', getAllAdvances);
 
 // GET advances by supplier ID
-router.get('/supplier/:supplierId', getAdvancesBySupplier);
+router.get('/:AdvancesBySupplier', getAdvancesBySupplier);
 
 // GET advance by ID
-router.get('/:id', getAdvanceById);
+router.get('/:AdvanceById', getAdvanceById);
 
 // POST create new advance
-router.post('/', createAdvance);
+router.post('/:createAdvance', createAdvance);
 
 // PUT update advance
-router.put('/:id', updateAdvance);
+router.put('/:updateAdvance', updateAdvance);
 
 // DELETE advance
-router.delete('/:id', deleteAdvance);
+router.delete('/:deleteAdvance', deleteAdvance);
 
 // PUT update advance status
-router.put('/:id/status', updateAdvanceStatus);
+router.put('/:updateAdvanceStatus', updateAdvanceStatus);
 
 // GET advance statistics
-router.get('/stats/summary', getAdvanceStatistics);
+router.get('/:AdvanceStatistics', getAdvanceStatistics);
 
 export default router;

@@ -11,24 +11,24 @@ import { getCollectionStatistics } from '../controllers/SupplierCollectionContro
 const router = express.Router();
 
 // GET all collections
-router.get('/', getAllCollections);
+router.get('/:AllCollections', getAllCollections);
 
 // GET collections by supplier ID
-router.get('/supplier/:supplierId', getCollectionsBySupplier);
+router.get('/:CollectionsBySupplier', getCollectionsBySupplier);
 
 // GET collection by ID
-router.get('/:id', getCollectionById);
+router.get('/:CollectionById', getCollectionById);
 
 // POST create new collection
-router.post('/', createCollection);
+router.post('/:createCollection', createCollection);
 
 // PUT update collection
-router.put('/:id', updateCollection);
+router.put('/:updateCollection', updateCollection);
 
 // DELETE collection
-router.delete('/:id', deleteCollection);
+router.delete('/:deleteCollection', deleteCollection);
 
 // GET collection statistics
-router.get('/stats/summary', getCollectionStatistics);
+router.get('/:CollectionStatistics', getCollectionStatistics);
 
 export default router;

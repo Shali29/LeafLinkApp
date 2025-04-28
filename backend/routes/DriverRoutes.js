@@ -8,18 +8,18 @@ import { deleteDriver } from '../controllers/DriverController.js';
 const router = express.Router();
 
 // GET all drivers
-router.get('/', getAllDrivers);
+router.get('/:AllDrivers', getAllDrivers);
 
 // GET driver by ID
-router.get('/:id', getDriverById);
+router.get('/:DriverById', getDriverById);
 
 // POST create new driver
-router.post('/', createDriver);
+router.post('/:createDriver', createDriver);
 
 // PUT update driver
-router.put('/:id', updateDriver);
+router.put('/:updateDriver', updateDriver);
 
 // DELETE driver
-router.delete('/:id', deleteDriver);
+router.delete('/:deleteDriver', deleteDriver);
 
 export default router;
