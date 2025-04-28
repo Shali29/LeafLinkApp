@@ -1,24 +1,29 @@
 import express from 'express';
-import productsController from '../controllers/ProductsController.js';
+import {getAllProducts } from '../controllers/ProductsController.js';
+import {getProductById} from '../controllers/ProductsController.js';
+import {createProduct } from '../controllers/ProductsController.js';
+import {updateProduct } from '../controllers/ProductsController.js';
+import {deleteProduct } from '../controllers/ProductsController.js';
+import {updateProductStock } from '../controllers/ProductsController.js';
 
 const router = express.Router();
 
 // GET all products
-router.get('/', productsController.getAllProducts);
+router.get('/', getAllProducts);
 
 // GET product by ID
-router.get('/:id', productsController.getProductById);
+router.get('/:id', getProductById);
 
 // POST create new product
-router.post('/', productsController.createProduct);
+router.post('/', createProduct);
 
 // PUT update product
-router.put('/:id', productsController.updateProduct);
+router.put('/:id', updateProduct);
 
 // DELETE product
-router.delete('/:id', productsController.deleteProduct);
+router.delete('/:id', deleteProduct);
 
 // PUT update product stock
-router.put('/:id/stock', productsController.updateProductStock);
+router.put('/:id/stock', updateProductStock);
 
 export default router;
