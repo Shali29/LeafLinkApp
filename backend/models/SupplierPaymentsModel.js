@@ -1,7 +1,7 @@
 // import db connection
 import db from '../config/db.js';
 
-class SupplierPayments {
+class SupplierPaymentsModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query(`
@@ -205,4 +205,4 @@ class SupplierPayments {
   }
 }
 
-export default SupplierPayments;
+export default SupplierPaymentsModel;

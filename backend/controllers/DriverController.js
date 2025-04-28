@@ -1,4 +1,4 @@
-import Driver from "../models/DriverModel";
+import Driver from "../models/DriverModel.js";
 export const getAllDrivers = async (req, res) => {
   try {
     const drivers = await Driver.getAll();

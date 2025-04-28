@@ -1,5 +1,5 @@
-import TeaPacketsFertilizers from '../models/TeaPackets&FertilizersModel.js';
-import Product from '../models/products.js';
+import TeaPacketsFertilizers from '../models/TeaPacketsFertilizersModel.js';
+
 
 export const getAllOrders = async (req, res) => {
   try {

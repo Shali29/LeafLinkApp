@@ -1,4 +1,4 @@
-import Supplier from '../models/SupplierModel';
+import Supplier from '../models/SupplierModel.js';
 import jwt from 'jsonwebtoken';
 
 // Helper function to generate JWT token

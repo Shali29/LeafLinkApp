@@ -1,7 +1,7 @@
 // teaPacketsFertilizers.js (ESM version)
-import db from '../config/database.js';
+import db from '../config/db.js';
 
-class TeaPacketsFertilizers {
+class TeaPacketsFertilizersModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query(`
@@ -130,4 +130,4 @@ class TeaPacketsFertilizers {
   }
 }
 
-export default TeaPacketsFertilizers;
+export default TeaPacketsFertilizersModel;

@@ -1,5 +1,4 @@
 import express from 'express';
-import supplierCollectionController from '../controllers/supplierCollectionController.js';
 import { getAllCollections } from '../controllers/SupplierCollectionController.js';
 import { getCollectionsBySupplier } from '../controllers/SupplierCollectionController.js';
 import { getCollectionById } from '../controllers/SupplierCollectionController.js';

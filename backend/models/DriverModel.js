@@ -1,6 +1,6 @@
 import db from '../config/db.js'; 
 
-class Driver {
+class DriverModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query('SELECT * FROM Driver', (err, results) => {
@@ -89,4 +89,4 @@ class Driver {
   }
 }
 
-export default Driver;
+export default DriverModel;

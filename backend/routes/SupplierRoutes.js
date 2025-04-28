@@ -1,10 +1,10 @@
 import express from 'express';
-import { getAllSuppliers } from '../controllers/SupplierController';
-import { getSupplierById } from '../controllers/SupplierController';
-import { createSupplier } from '../controllers/SupplierController';
-import { updateSupplier } from '../controllers/SupplierController'; 
-import { deleteSupplier } from '../controllers/SupplierController';
-import {loginSupplier} from '../controllers/SupplierController';
+import { getAllSuppliers } from '../controllers/SupplierController.js';
+import { getSupplierById } from '../controllers/SupplierController.js';
+import { createSupplier } from '../controllers/SupplierController.js';
+import { updateSupplier } from '../controllers/SupplierController.js'; 
+import { deleteSupplier } from '../controllers/SupplierController.js';
+import {loginSupplier} from '../controllers/SupplierController.js';
 
 const router = express.Router();
 

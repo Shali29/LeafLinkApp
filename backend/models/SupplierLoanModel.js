@@ -1,6 +1,6 @@
 import db from '../config/db.js';
 
-class SupplierLoan {
+class SupplierLoanModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query(`
@@ -150,4 +150,4 @@ class SupplierLoan {
   }
 }
 
-export default SupplierLoan;
+export default SupplierLoanModel;

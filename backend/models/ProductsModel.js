@@ -1,6 +1,6 @@
 import db from '../config/db.js'; 
 
-class Product {
+class ProductsModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query('SELECT * FROM Products', (err, results) => {
@@ -101,4 +101,4 @@ class Product {
   }
 }
 
-export default Product;
+export default ProductsModel;

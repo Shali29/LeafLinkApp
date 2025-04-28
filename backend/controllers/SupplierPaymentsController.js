@@ -1,4 +1,4 @@
-import SupplierPayment from '../models/SupplierPayment.js';
+import SupplierPayment from '../models/SupplierPaymentsModel.js';
 
 export const getAllPayments = async (req, res) => {
   try {

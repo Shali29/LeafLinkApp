@@ -1,4 +1,4 @@
-import SupplierCollection from '../models/supplier-collection.js';
+import SupplierCollection from '../models/SupplierCollectionModel.js';
 
 export const getAllCollections = async (req, res) => {
   try {

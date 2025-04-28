@@ -1,4 +1,4 @@
-import SupplierAdvance from '../models/supplierAdvance.js';
+import SupplierAdvance from '../models/SupplierAdvanceModel.js';
 
 // Get all supplier advances
 export const getAllAdvances = async (req, res) => {

@@ -1,6 +1,6 @@
 import db from '../config/db.js'; 
 
-class SupplierCollection {
+class SupplierCollectionModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query(`
@@ -123,4 +123,4 @@ class SupplierCollection {
   }
 }
 
-export default SupplierCollection;
+export default SupplierCollectionModel;

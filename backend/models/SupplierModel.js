@@ -1,7 +1,7 @@
 import db from '../config/db.js'; 
 import bcrypt from 'bcrypt';
 
-class Supplier {
+class SupplierModel {
   static getAll() {
     return new Promise((resolve, reject) => {
       db.query('SELECT S_RegisterID, S_FullName, S_Address, S_ContactNo, Email FROM Supplier', (err, results) => {
@@ -133,4 +133,4 @@ class Supplier {
   }
 }
 
-export default Supplier;
+export default SupplierModel;
