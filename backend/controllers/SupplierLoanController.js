@@ -1,4 +1,4 @@
-import Loan from '../models/loan.js';
+import Loan from '../models/SupplierLoanModel.js';
 
 // Get all supplier loans
 export const getAllLoans = async (req, res) => {

@@ -81,7 +81,7 @@ export const deleteSupplier = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+export const loginSupplier = async (req, res) => {
   try {
     const { username, password } = req.body;
     

@@ -7,7 +7,7 @@ class Supplier {
       db.query('SELECT S_RegisterID, S_FullName, S_Address, S_ContactNo, Email FROM Supplier', (err, results) => {
         if (err) return reject(err);
         resolve(results);
-      });
+      });SS
     });
   }
 

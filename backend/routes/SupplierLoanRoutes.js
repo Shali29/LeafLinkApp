@@ -1,30 +1,27 @@
 import express from 'express';
-import teaPacketsFertilizersController from '../controllers/teaPacketsFertilizersController.js';
+import supplierLoanController from '../controllers/SupplierLoanController.js';
 
 const router = express.Router();
 
-// GET all orders
-router.get('/', teaPacketsFertilizersController.getAllOrders);
+// GET all loans
+router.get('/', supplierLoanController.getAllLoans);
 
-// GET orders by supplier ID
-router.get('/supplier/:supplierId', teaPacketsFertilizersController.getOrdersBySupplier);
+// GET loans by supplier ID
+router.get('/supplier/:supplierId', supplierLoanController.getLoansBySupplier);
 
-// GET order by ID
-router.get('/:id', teaPacketsFertilizersController.getOrderById);
+// GET loan by ID
+router.get('/:id', supplierLoanController.getLoanById);
 
-// POST create new order
-router.post('/', teaPacketsFertilizersController.createOrder);
+// POST create new loan
+router.post('/', supplierLoanController.createLoan);
 
-// PUT update order
-router.put('/:id', teaPacketsFertilizersController.updateOrder);
+// PUT update loan
+router.put('/:id', supplierLoanController.updateLoan);
 
-// DELETE order
-router.delete('/:id', teaPacketsFertilizersController.deleteOrder);
+// DELETE loan
+router.delete('/:id', supplierLoanController.deleteLoan);
 
-// PUT update order status
-router.put('/:id/status', teaPacketsFertilizersController.updateOrderStatus);
-
-// GET order statistics
-router.get('/stats/summary', teaPacketsFertilizersController.getOrderStatistics);
+// GET loan statistics
+router.get('/stats/summary', supplierLoanController.getLoanStatistics);
 
 export default router;
