@@ -124,3 +124,13 @@ export const deleteOrder = async (req, res) => {
     res.status(500).json({ message: 'Error deleting order', error: error.message });
   }
 };
+
+export const getOrderStatistics = async (req, res) => {
+  try {
+    const statistics = await TeaPacketsFertilizers.getStatistics();
+    res.status(200).json(statistics);
+  } catch (error) {
+    console.error('Error getting order statistics:', error);
+    res.status(500).json({ message: 'Error fetching order statistics', error: error.message });
+  }
+}
