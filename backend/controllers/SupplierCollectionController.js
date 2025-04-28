@@ -80,3 +80,13 @@ export const deleteCollection = async (req, res) => {
     res.status(500).json({ message: 'Error deleting collection', error: error.message });
   }
 };
+
+export const getCollectionStatistics = async (req, res) => {
+  try {
+    const statistics = await SupplierCollection.getStatistics();
+    res.status(200).json(statistics);
+  } catch (error) {
+    console.error('Error getting collection statistics:', error);
+    res.status(500).json({ message: 'Error fetching collection statistics', error: error.message });
+  }
+};
