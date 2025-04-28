@@ -27,13 +27,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(morgan('dev'));
 
 // Test database connection
-(async () => {
-  const isConnected = await testConnection();
-  if (!isConnected) {
-    console.error('Could not connect to the database. Exiting...');
-    process.exit(1);
-  }
-})();
+// (async () => {
+//   const isConnected = await testConnection();
+//   if (!isConnected) {
+//     console.error('Could not connect to the database. Exiting...');
+//     process.exit(1);
+//   }
+// })();
 
 // API routes
 app.use('/api/suppliers', supplierRoutes);
