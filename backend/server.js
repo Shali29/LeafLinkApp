@@ -2,8 +2,8 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import pool from './config/db.js';
- 
-
+import SupplierRoute from './routes/SupplierRoute.js';
+import ProductRoute from './routes/ProductRoute.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cors());
 
 // api endpoints
-
+app.use('/api/supplier', SupplierRoute);
  
 
 app.get('/test-db', async (req, res) => {

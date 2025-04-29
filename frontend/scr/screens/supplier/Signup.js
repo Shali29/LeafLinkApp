@@ -1,6 +1,5 @@
-// src/screens/supplier/Signup.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
@@ -15,6 +14,48 @@ const SupplierSignup = ({ navigation }) => {
   const [bankName, setBankName] = useState('');
   const [branch, setBranch] = useState('');
 
+  // Submit function to call API
+  const handleSubmit = async () => {
+    if (
+      !fullName || !address || !email || !password || !contactNumber ||
+      !accountNumber || !bankName || !branch
+    ) {
+      Alert.alert('All fields are required');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:4000/api/supplier/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName,
+          address,
+          email,
+          password,
+          contactNumber,
+          accountNumber,
+          bankName,
+          branch,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'Signup successful!');
+        navigation.navigate('SupplierLogin');
+      } else {
+        Alert.alert('Error', data.message || 'Signup failed');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Network error', 'Please try again.');
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity 
@@ -23,18 +64,14 @@ const SupplierSignup = ({ navigation }) => {
       >
         <AntDesign name="arrowleft" size={24} color="black" />
       </TouchableOpacity>
-      
+
       <View style={styles.formContainer}>
         <View style={styles.profileIcon}>
           <AntDesign name="user" size={60} color="black" />
         </View>
-        
+
         <Text style={styles.sectionTitle}>Personal Details:</Text>
-        <Input
-          placeholder="Register ID"
-          style={styles.input}
-        />
-        
+
         <Input
           placeholder="Full Name"
           value={fullName}
@@ -56,7 +93,7 @@ const SupplierSignup = ({ navigation }) => {
           keyboardType="phone-pad"
           style={styles.input}
         />
-        
+
         <Input
           placeholder="Email"
           value={email}
@@ -68,13 +105,13 @@ const SupplierSignup = ({ navigation }) => {
         <Input
           placeholder="Password"
           value={password}
-          onChangeText={setEmail}
-          keyboardType="password"
+          onChangeText={setPassword}
+          secureTextEntry
           style={styles.input}
         />
-        
+
         <Text style={styles.sectionTitle}>Bank Details:</Text>
-        
+
         <Input
           placeholder="Account Number"
           value={accountNumber}
@@ -82,7 +119,7 @@ const SupplierSignup = ({ navigation }) => {
           keyboardType="numeric"
           style={styles.input}
         />
-        
+
         <Input
           placeholder="Bank Name"
           value={bankName}
@@ -93,13 +130,13 @@ const SupplierSignup = ({ navigation }) => {
         <Input
           placeholder="Branch"
           value={branch}
-          onChangeText={setBankName}
+          onChangeText={setBranch}
           style={styles.input}
         />
-        
+
         <Button
           title="Submit"
-          onPress={() => navigation.navigate('SupplierLogin')}
+          onPress={handleSubmit}
           style={styles.submitButton}
         />
       </View>
