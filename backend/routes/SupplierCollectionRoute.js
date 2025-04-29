@@ -1,80 +1,37 @@
-import SupplierCollectionModel from '../models/SupplierCollectionModel.js';
+// SupplierCollectionRoute.js
 
-// Get all collections
-export const getAllCollections = async (req, res) => {
-  try {
-    const collections = await SupplierCollectionModel.getAll();
-    res.status(200).json(collections);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch collections', error: error.message });
-  }
-};
+import express from 'express';
+import {
+  getAllCollections,
+  getCollectionById,
+  getCollectionsBySupplier,
+  createCollection,
+  updateCollection,
+  deleteCollection,
+  getCollectionStatistics
+} from '../controllers/SupplierCollectionController.js';
 
-// Get collections by supplier ID
-export const getCollectionsBySupplier = async (req, res) => {
-  try {
-    const supplierId = req.params.CollectionsBySupplier;
-    const collections = await SupplierCollectionModel.getBySupplierId(supplierId);
-    res.status(200).json(collections);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch collections for supplier', error: error.message });
-  }
-};
+const router = express.Router();
 
-// Get collection by ID
-export const getCollectionById = async (req, res) => {
-  try {
-    const collectionId = req.params.CollectionById;
-    const collection = await SupplierCollectionModel.getById(collectionId);
-    if (!collection) {
-      return res.status(404).json({ message: 'Collection not found' });
-    }
-    res.status(200).json(collection);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch collection', error: error.message });
-  }
-};
+// Get all supplier collections (with supplier name)
+router.get('/all', getAllCollections);
 
-// Create new collection
-export const createCollection = async (req, res) => {
-  try {
-    const result = await SupplierCollectionModel.create(req.body);
-    res.status(201).json({ message: 'Collection created successfully', result });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to create collection', error: error.message });
-  }
-};
+// Get a supplier collection by its ID
+router.get('/:id', getCollectionById);
 
-// Update collection
-export const updateCollection = async (req, res) => {
-  try {
-    const collectionId = req.params.updateCollection;
-    const result = await SupplierCollectionModel.update(collectionId, req.body);
-    res.status(200).json({ message: 'Collection updated successfully', result });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update collection', error: error.message });
-  }
-};
+// Get all collections for a specific supplier
+router.get('/supplier/:supplierId', getCollectionsBySupplier);
 
-// Delete collection
-export const deleteCollection = async (req, res) => {
-  try {
-    const collectionId = req.params.deleteCollection;
-    const result = await SupplierCollectionModel.delete(collectionId);
-    res.status(200).json({ message: 'Collection deleted successfully', result });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to delete collection', error: error.message });
-  }
-};
+// Create a new supplier collection
+router.post('/create', createCollection);
 
-// Get collection statistics (example implementation)
-export const getCollectionStatistics = async (req, res) => {
-  try {
-    // Example: total number of collections
-    const collections = await SupplierCollectionModel.getAll();
-    const totalCollections = collections.length;
-    res.status(200).json({ totalCollections });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch collection statistics', error: error.message });
-  }
-};
+// Update an existing supplier collection
+router.put('/update/:id', updateCollection);
+
+// Delete a supplier collection by its ID
+router.delete('/delete/:id', deleteCollection);
+
+// Get collection statistics (total, sum, average, daily, etc.)
+router.get('/statistics', getCollectionStatistics);
+
+export default router;

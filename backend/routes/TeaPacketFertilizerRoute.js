@@ -1,237 +1,37 @@
-// router.js
+// TeaPacketFertilizerRoute.js
+
 import express from 'express';
-import db from '../config/db.js';
+import {
+  getAllOrders,
+  getOrderById,
+  getOrdersBySupplier,
+  createOrder,
+  updateOrderStatus,
+  updateOrder,
+  deleteOrder
+} from '../controllers/TeaPacketFertilizerController.js';
 
 const router = express.Router();
 
-// --- Model inside router ---
-class TeaPacketsFertilizersModel {
-  static getAll() {
-    return new Promise((resolve, reject) => {
-      db.query(`
-        SELECT tpf.*, s.S_FullName, p.ProductName, p.Rate_per_Bag
-        FROM TeaPackets_Fertilizers tpf
-        JOIN Supplier s ON tpf.S_RegisterID = s.S_RegisterID
-        JOIN Products p ON tpf.ProductID = p.ProductID
-        ORDER BY tpf.Request_Date DESC
-      `, (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
-  }
+// Get all tea packet/fertilizer orders
+router.get('/all', getAllOrders);
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
-      db.query(`
-        SELECT tpf.*, s.S_FullName, p.ProductName, p.Rate_per_Bag
-        FROM TeaPackets_Fertilizers tpf
-        JOIN Supplier s ON tpf.S_RegisterID = s.S_RegisterID
-        JOIN Products p ON tpf.ProductID = p.ProductID
-        WHERE tpf.Order_ID = ?
-      `, [id], (err, results) => {
-        if (err) return reject(err);
-        if (results.length === 0) return resolve(null);
-        resolve(results[0]);
-      });
-    });
-  }
+// Get an order by its ID
+router.get('/:id', getOrderById);
 
-  static getBySupplierId(supplierId) {
-    return new Promise((resolve, reject) => {
-      db.query(`
-        SELECT tpf.*, p.ProductName, p.Rate_per_Bag
-        FROM TeaPackets_Fertilizers tpf
-        JOIN Products p ON tpf.ProductID = p.ProductID
-        WHERE tpf.S_RegisterID = ?
-        ORDER BY tpf.Request_Date DESC
-      `, [supplierId], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
-  }
+// Get all orders for a specific supplier
+router.get('/supplier/:supplierId', getOrdersBySupplier);
 
-  static create(orderData) {
-    return new Promise((resolve, reject) => {
-      const query = `
-        INSERT INTO TeaPackets_Fertilizers (
-          S_RegisterID, ProductID, Qty, Request_Date, Order_Status, 
-          Total_Items, Total_TeaPackets, Total_OtherItems
-        ) VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?)
-      `;
+// Create a new order
+router.post('/create', createOrder);
 
-      orderData.Order_Status = orderData.Order_Status || 'Pending';
-      orderData.Total_Items = orderData.Total_Items || orderData.Qty;
-      orderData.Total_TeaPackets = orderData.Total_TeaPackets || 0;
-      orderData.Total_OtherItems = orderData.Total_OtherItems || orderData.Qty;
+// Update the status of an order
+router.put('/updateStatus/:id', updateOrderStatus);
 
-      db.query(query, [
-        orderData.S_RegisterID,
-        orderData.ProductID,
-        orderData.Qty,
-        orderData.Order_Status,
-        orderData.Total_Items,
-        orderData.Total_TeaPackets,
-        orderData.Total_OtherItems
-      ], (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
-  }
+// Update an order
+router.put('/update/:id', updateOrder);
 
-  static updateStatus(id, status) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'UPDATE TeaPackets_Fertilizers SET Order_Status = ? WHERE Order_ID = ?',
-        [status, id],
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
-    });
-  }
-
-  static update(id, orderData) {
-    return new Promise((resolve, reject) => {
-      const query = `
-        UPDATE TeaPackets_Fertilizers SET 
-          S_RegisterID = ?, 
-          ProductID = ?, 
-          Qty = ?, 
-          Order_Status = ?, 
-          Total_Items = ?, 
-          Total_TeaPackets = ?, 
-          Total_OtherItems = ?
-        WHERE Order_ID = ?
-      `;
-
-      db.query(query, [
-        orderData.S_RegisterID,
-        orderData.ProductID,
-        orderData.Qty,
-        orderData.Order_Status,
-        orderData.Total_Items,
-        orderData.Total_TeaPackets,
-        orderData.Total_OtherItems,
-        id
-      ], (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
-  }
-
-  static delete(id) {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM TeaPackets_Fertilizers WHERE Order_ID = ?', [id], (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      });
-    });
-  }
-}
-
-// --- Route Handlers inside router ---
-
-router.get('/Allorders', async (req, res) => {
-  try {
-    const orders = await TeaPacketsFertilizersModel.getAll();
-    res.status(200).json(orders);
-  } catch (error) {
-    console.error('Error fetching all orders:', error);
-    res.status(500).json({ message: 'Error fetching all orders', error: error.message });
-  }
-});
-
-router.get('/OrdersBySupplier/:supplierId', async (req, res) => {
-  try {
-    const orders = await TeaPacketsFertilizersModel.getBySupplierId(req.params.supplierId);
-    res.status(200).json(orders);
-  } catch (error) {
-    console.error('Error fetching supplier orders:', error);
-    res.status(500).json({ message: 'Error fetching supplier orders', error: error.message });
-  }
-});
-
-router.get('/OrderById/:id', async (req, res) => {
-  try {
-    const order = await TeaPacketsFertilizersModel.getById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-    res.status(200).json(order);
-  } catch (error) {
-    console.error('Error fetching order by ID:', error);
-    res.status(500).json({ message: 'Error fetching order', error: error.message });
-  }
-});
-
-router.post('/CreateOrder', async (req, res) => {
-  try {
-    const { S_RegisterID, ProductID, Qty } = req.body;
-    if (!S_RegisterID || !ProductID || !Qty) {
-      return res.status(400).json({ message: 'S_RegisterID, ProductID, and Qty are required' });
-    }
-
-    await TeaPacketsFertilizersModel.create(req.body);
-    res.status(201).json({ message: 'Order created successfully' });
-  } catch (error) {
-    console.error('Error creating order:', error);
-    res.status(500).json({ message: 'Error creating order', error: error.message });
-  }
-});
-
-router.put('/updateOrder/:id', async (req, res) => {
-  try {
-    const order = await TeaPacketsFertilizersModel.getById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    await TeaPacketsFertilizersModel.update(req.params.id, req.body);
-    res.status(200).json({ message: 'Order updated successfully' });
-  } catch (error) {
-    console.error('Error updating order:', error);
-    res.status(500).json({ message: 'Error updating order', error: error.message });
-  }
-});
-
-router.delete('/deleteOrder/:id', async (req, res) => {
-  try {
-    const order = await TeaPacketsFertilizersModel.getById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    await TeaPacketsFertilizersModel.delete(req.params.id);
-    res.status(200).json({ message: 'Order deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting order:', error);
-    res.status(500).json({ message: 'Error deleting order', error: error.message });
-  }
-});
-
-router.put('/updateOrderStatus/:id', async (req, res) => {
-  try {
-    const { status } = req.body;
-    if (!status) {
-      return res.status(400).json({ message: 'Status is required' });
-    }
-
-    const order = await TeaPacketsFertilizersModel.getById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    await TeaPacketsFertilizersModel.updateStatus(req.params.id, status);
-    res.status(200).json({ message: 'Order status updated successfully' });
-  } catch (error) {
-    console.error('Error updating order status:', error);
-    res.status(500).json({ message: 'Error updating order status', error: error.message });
-  }
-});
+// Delete an order
+router.delete('/delete/:id', deleteOrder);
 
 export default router;
