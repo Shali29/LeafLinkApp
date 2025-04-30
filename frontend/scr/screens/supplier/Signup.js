@@ -5,20 +5,22 @@ import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
 const SupplierSignup = ({ navigation }) => {
-  const [fullName, setFullName] = useState('');
-  const [address, setAddress] = useState('');
-  const [email, setEmail] = useState('');
+  const [S_FullName, setS_FullName] = useState('');
+  const [S_Address, setS_Address] = useState('');
+  const [Email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [bankName, setBankName] = useState('');
-  const [branch, setBranch] = useState('');
+  const [S_ContactNo, setS_ContactNo] = useState('');
+  const [AccountNumber, setAccountNumber] = useState('');
+  const [BankName, setBankName] = useState('');
+  const [Branch, setBranch] = useState('');
+  const [Username, setUsername] = useState('');
+  const [S_RegisterID, setS_RegisterID] = useState('');
 
   // Submit function to call API
   const handleSubmit = async () => {
     if (
-      !fullName || !address || !email || !password || !contactNumber ||
-      !accountNumber || !bankName || !branch
+      !S_FullName || !S_Address || !Email || !password || !S_ContactNo ||
+      !AccountNumber || !BankName || !Branch || !Username || !S_RegisterID
     ) {
       Alert.alert('All fields are required');
       return;
@@ -31,14 +33,16 @@ const SupplierSignup = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          fullName,
-          address,
-          email,
-          password,
-          contactNumber,
-          accountNumber,
-          bankName,
-          branch,
+          S_RegisterID,
+          S_FullName,
+          S_Address,
+          S_ContactNo,
+          AccountNumber,
+          BankName,
+          Branch,
+          Email,
+          Username,
+          password
         }),
       });
 
@@ -73,32 +77,46 @@ const SupplierSignup = ({ navigation }) => {
         <Text style={styles.sectionTitle}>Personal Details:</Text>
 
         <Input
+          placeholder="Register ID"
+          value={S_RegisterID}
+          onChangeText={setS_RegisterID}
+          style={styles.input}
+        />
+
+        <Input
           placeholder="Full Name"
-          value={fullName}
-          onChangeText={setFullName}
+          value={S_FullName}
+          onChangeText={setS_FullName}
           style={styles.input}
         />
 
         <Input
           placeholder="Address"
-          value={address}
-          onChangeText={setAddress}
+          value={S_Address}
+          onChangeText={setS_Address}
           style={styles.input}
         />
 
         <Input
           placeholder="Contact Number"
-          value={contactNumber}
-          onChangeText={setContactNumber}
+          value={S_ContactNo}
+          onChangeText={setS_ContactNo}
           keyboardType="phone-pad"
           style={styles.input}
         />
 
         <Input
           placeholder="Email"
-          value={email}
+          value={Email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          style={styles.input}
+        />
+
+        <Input
+          placeholder="Username"
+          value={Username}
+          onChangeText={setUsername}
           style={styles.input}
         />
 
@@ -114,7 +132,7 @@ const SupplierSignup = ({ navigation }) => {
 
         <Input
           placeholder="Account Number"
-          value={accountNumber}
+          value={AccountNumber}
           onChangeText={setAccountNumber}
           keyboardType="numeric"
           style={styles.input}
@@ -122,14 +140,14 @@ const SupplierSignup = ({ navigation }) => {
 
         <Input
           placeholder="Bank Name"
-          value={bankName}
+          value={BankName}
           onChangeText={setBankName}
           style={styles.input}
         />
 
         <Input
           placeholder="Branch"
-          value={branch}
+          value={Branch}
           onChangeText={setBranch}
           style={styles.input}
         />
