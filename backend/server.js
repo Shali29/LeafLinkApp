@@ -2,8 +2,17 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import pool from './config/db.js';
+
 import SupplierRoute from './routes/SupplierRoute.js';
 import ProductRoute from './routes/ProductRoute.js';
+import DriverRoute from './routes/DriverRoute.js';
+import SupplierLoanRoute from './routes/SupplierLoanRoute.js';  
+import SupplierAdvanceRoute from './routes/SupplierLoanRoute.js';
+import SupplierCollectionRoute from './routes/SupplierAdvanceRoute.js';
+import SupplierPaymentRoute from './routes/SupplierAdvanceRoute.js';
+import TeaPacketFertilizerRoute from './routes/TeaPacketFertilizerRoute.js';
+
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -13,6 +22,13 @@ app.use(cors());
 
 // api endpoints
 app.use('/api/supplier', SupplierRoute);
+app.use('/api/product', ProductRoute);
+app.use('/api/driver', DriverRoute);
+app.use('/api/supplierLoan', SupplierLoanRoute);
+app.use('/api/supplierAdvance', SupplierAdvanceRoute);
+app.use('/api/supplierCollection', SupplierCollectionRoute);
+app.use('/api/supplierPayment', SupplierPaymentRoute);
+app.use('/api/teaPacketFertilizer', TeaPacketFertilizerRoute);
  
 
 app.get('/test-db', async (req, res) => {
