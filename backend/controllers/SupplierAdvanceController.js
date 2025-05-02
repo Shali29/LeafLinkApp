@@ -182,23 +182,36 @@ export const getAdvanceById = async (req, res) => {
 // Create a new advance
 export const createAdvance = async (req, res) => {
   try {
-    const { S_RegisterID, Advance_Amount, Date, Status } = req.body;
+    const { amount, advanceDate, notes, S_RegisterID } = req.body;
 
-    if (!S_RegisterID || !Advance_Amount) {
-      return res.status(400).json({ message: 'Supplier ID and Advance Amount are required' });
+    // Validate required fields
+    if (!amount || !S_RegisterID) {
+      return res.status(400).json({ message: 'Amount and supplier ID are required' });
     }
 
-    const newAdvance = await SupplierAdvance.create({
-      S_RegisterID,
-      Advance_Amount,
-      Date: Date || new Date(),
-      Status: Status || 'Pending'
-    });
+    // Handle date - either use provided date or current date
+    const dateToUse = advanceDate ? new Date(advanceDate) : new Date();
+    
+    // If you need MySQL formatted date
+    const mysqlDate = dateToUse.toISOString().slice(0, 19).replace('T', ' ');
 
-    res.status(201).json(newAdvance);
+    const [result] = await db.query(
+      `INSERT INTO Supplier_Advances 
+       (S_RegisterID, Amount, AdvanceDate, Notes) 
+       VALUES (?, ?, ?, ?)`,
+      [S_RegisterID, amount, mysqlDate, notes || null]
+    );
+
+    res.status(201).json({ 
+      message: 'Advance created successfully',
+      advanceId: result.insertId
+    });
   } catch (error) {
     console.error('Error creating advance:', error);
-    res.status(500).json({ message: 'Error creating advance', error: error.message });
+    res.status(500).json({ 
+      message: 'Error creating advance',
+      error: error.message 
+    });
   }
 };
 

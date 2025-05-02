@@ -26,7 +26,7 @@ router.get('/supplier/:supplierId', getCollectionsBySupplier);
 router.post('/create', createCollection);
 
 // Update an existing supplier collection
-router.put('/update/:id', updateCollection);
+router.put('/update', updateCollection);
 
 // Delete a supplier collection by its ID
 router.delete('/delete/:id', deleteCollection);

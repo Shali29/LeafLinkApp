@@ -18,7 +18,7 @@ router.get('/AllDrivers', getAllDrivers);
 router.get('/DriverById/:id', getDriverById);
 
 // POST create new driver
-router.post('/createDriver', createDriver);
+router.post('/create', createDriver);
 
 // PUT update driver
 router.put('/updateDriver/:id', updateDriver);
