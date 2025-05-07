@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
@@ -15,6 +16,27 @@ const SupplierSignup = ({ navigation }) => {
   const [Branch, setBranch] = useState('');
   const [Username, setUsername] = useState('');
   const [S_RegisterID, setS_RegisterID] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+
+  // Pick image from gallery
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission denied', 'Please allow access to gallery to upload a profile picture.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
 
   // Submit function to call API
   const handleSubmit = async () => {
@@ -27,7 +49,7 @@ const SupplierSignup = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/supplier/create', {
+      const response = await fetch('https://backend-production-f1ac.up.railway.app/api/supplier/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +64,7 @@ const SupplierSignup = ({ navigation }) => {
           Branch,
           Email,
           Username,
-          password
+          password,
         }),
       });
 
@@ -71,7 +93,17 @@ const SupplierSignup = ({ navigation }) => {
 
       <View style={styles.formContainer}>
         <View style={styles.profileIcon}>
-          <AntDesign name="user" size={60} color="black" />
+          <TouchableOpacity onPress={pickImage} style={styles.profileImageWrapper}>
+            {profileImage ? (
+              <Image source={{ uri: profileImage }} style={styles.profileImage} />
+            ) : (
+              <AntDesign name="user" size={60} color="black" />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={pickImage} style={styles.cameraIcon}>
+            <AntDesign name="camerao" size={20} color="black" />
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.sectionTitle}>Personal Details:</Text>
@@ -184,6 +216,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
+    position: 'relative',
+  },
+  profileImageWrapper: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  cameraIcon: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 4,
+    elevation: 3,
   },
   input: {
     backgroundColor: '#D1F5D1',
