@@ -1,13 +1,49 @@
-// src/screens/supplier/Login.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
+import axios from 'axios';  // Import axios
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const SupplierLogin = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  // Function to handle login request
+  const handleLogin = async () => {
+    try {
+      // Send POST request to the backend
+      const response = await axios.post(
+        'https://backend-production-f1ac.up.railway.app/api/supplier/login',
+        {
+          username: username,
+          password: password,
+        }
+      );
+
+      // If login is successful, store the token
+      if (response.data.token) {
+        // Store the token for later use (like in AsyncStorage)
+        await AsyncStorage.setItem('token', response.data.token);
+
+        // Navigate to SupplierHome
+        navigation.navigate('SupplierHome');
+      }
+    } catch (error) {
+      // Handle error
+      if (error.response) {
+        // Backend responded with an error (e.g., 401 Unauthorized)
+        Alert.alert('Login Failed', error.response.data.message || 'Invalid credentials');
+      } else if (error.request) {
+        // Request was made but no response was received
+        Alert.alert('Login Failed', 'No response from server');
+      } else {
+        // Something else happened
+        Alert.alert('Login Failed', 'An error occurred during login');
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -19,10 +55,10 @@ const SupplierLogin = ({ navigation }) => {
       </TouchableOpacity>
 
       <View style={styles.logoContainer}>
-              <Image 
-                source={require('../../../assets/images/logo.png')} 
-                style={styles.logo}
-              />
+        <Image 
+          source={require('../../../assets/images/logo.png')} 
+          style={styles.logo}
+        />
       </View>
       
       <View style={styles.formContainer}>
@@ -45,7 +81,7 @@ const SupplierLogin = ({ navigation }) => {
         
         <Button
           title="Login"
-          onPress={() => navigation.navigate('SupplierHome')}
+          onPress={handleLogin}  // Call the login handler
           style={styles.loginButton}
         />
         
@@ -70,10 +106,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 20,
   },
-  header: {
-    marginTop: 60,
-    alignItems: 'center',
-  },
   logo: {
     width: 100,
     height: 100,
@@ -84,14 +116,6 @@ const styles = StyleSheet.create({
     marginBottom: 1,
     marginTop: 30,
   },  
-  headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
-    marginTop: 20,
-  },
   formContainer: {
     flex: 1,
     justifyContent: 'center',
