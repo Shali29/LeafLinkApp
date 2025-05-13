@@ -35,16 +35,11 @@ const DriverLogin = ({ navigation }) => {
 
         <Button
           title="Login"
-          onPress={() => navigation.navigate('DriverHome')}
+          onPress={() => navigation.navigate('OtpVerificationScreen')}
           style={styles.loginButton}
         />
         
-        <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('DriverSignup')}>
-            <Text style={styles.registerLink}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+      
       </View>
     </View>
   );

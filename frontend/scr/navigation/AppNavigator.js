@@ -23,7 +23,7 @@ import EditProfile from '../screens/supplier/EditProfile';
 
 // Driver screens
 import DriverLogin from '../screens/driver/Login';
-import DriverSignup from '../screens/driver/Signup';
+import OtpVerificationScreen from '../screens/driver/OTP';
 import DriverHome from '../screens/driver/Home';
 import Suppliers from '../screens/driver/Suppliers';
 import Requests from '../screens/driver/Requests';
@@ -56,7 +56,7 @@ const AppNavigator = () => {
       
       {/* Driver Screens */}
       <Stack.Screen name="DriverLogin" component={DriverLogin} />
-      <Stack.Screen name="DriverSignup" component={DriverSignup} />
+      <Stack.Screen name="OtpVerificationScreen" component={OtpVerificationScreen} />
       <Stack.Screen name="DriverHome" component={DriverHome} />
       <Stack.Screen name="Suppliers" component={Suppliers} /> 
       <Stack.Screen name="Requests" component={Requests} />
