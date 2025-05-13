@@ -57,11 +57,12 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 100,
   },
   logo: {
     width: 100,
     height: 100,
+    marginTop: 70,
     resizeMode: 'contain',
     alignItems: 'center',
     justifyContent: 'center',
