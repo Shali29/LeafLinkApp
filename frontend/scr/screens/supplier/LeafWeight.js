@@ -1,30 +1,60 @@
-// src/screens/supplier/LeafWeight.js
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment'; // npm install moment
 
 const LeafWeight = ({ navigation }) => {
-  const [selectedYear, setSelectedYear] = useState('2023');
-  
-  const weightData = {
-    '2023': [
-      { area: 'Area 1', weight: 25, moisture: 8.4, waterContent: 9.1 },
-      { area: 'Area 2', weight: 32, moisture: 7.9, waterContent: 8.5 },
-      { area: 'Area 3', weight: 28, moisture: 8.1, waterContent: 9.0 },
-    ],
-    '2024': [
-      { area: 'Area 1', weight: 29, moisture: 8.0, waterContent: 8.8 },
-      { area: 'Area 2', weight: 34, moisture: 7.7, waterContent: 8.2 },
-      { area: 'Area 3', weight: 31, moisture: 7.9, waterContent: 8.7 },
-    ]
+  const [collections, setCollections] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchCollections = async () => {
+    try {
+      const supplierId = await AsyncStorage.getItem('supplierId');
+      if (!supplierId) return;
+
+      const res = await axios.get(`https://backend-production-f1ac.up.railway.app/api/supplierCollection/supplier/${supplierId}`);
+      setCollections(res.data || []);
+    } catch (err) {
+      console.error('Fetch Error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
+
+  const today = moment().format('YYYY-MM-DD');
+  const currentMonth = moment().format('YYYY-MM');
+
+  // Filter for current month
+  const currentMonthCollections = collections.filter(item =>
+    item.DateTime && item.DateTime.startsWith(currentMonth)
+  );
+
+  const currentRate = currentMonthCollections[0]?.Current_Rate || 'N/A';
+
+  const totalMonthWeight = currentMonthCollections.reduce(
+    (sum, item) => sum + (item.BalanceWeight_kg || 0), 0
+  );
+
+  // Group by date
+  const groupedByDate = {};
+  currentMonthCollections.forEach(item => {
+    const date = item.DateTime?.split('T')[0];
+    if (!groupedByDate[date]) {
+      groupedByDate[date] = [];
+    }
+    groupedByDate[date].push(item);
+  });
+
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => moment(b).diff(moment(a)));
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            ></TouchableOpacity>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -32,56 +62,55 @@ const LeafWeight = ({ navigation }) => {
         <Text style={styles.headerTitle}>Leaf Weight</Text>
       </View>
 
-      <View style={styles.TextContainer}>
-          <Text style={styles.subtitle}>Current rate per 1 kg of tea leaves: </Text>
-          <Text style={styles.subtitle}>Date: </Text>
-          <Text style={styles.subtitle}>Leaves collected this month: </Text>
+      <View style={styles.topCard}>
+        <Text style={styles.infoText}>
+          Current rate per 1 kg of tea leaves:  <Text style={styles.bold}>Rs.{currentRate}/-</Text>
+        </Text>
+        <Text style={styles.infoText}>
+          Date: <Text style={styles.bold}>{moment().format('YYYY MMM D')}</Text>
+        </Text>
+        <Text style={styles.infoText}>
+          Leaves collected this month: <Text style={styles.bold}>{totalMonthWeight} kg</Text>
+        </Text>
       </View>
-      
-      <View style={styles.contentContainer}>
-        <Text style={styles.subtitle}>Collected Weight by Estate (Average per kg)</Text>
-        
-        <View style={styles.yearSelector}>
-          <TouchableOpacity 
-            style={[styles.yearButton, selectedYear === '2023' && styles.yearButtonActive]}
-            onPress={() => setSelectedYear('2023')}
-          >
-            <Text style={[styles.yearText, selectedYear === '2023' && styles.yearTextActive]}>
-              2023 Data
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.yearButton, selectedYear === '2024' && styles.yearButtonActive]}
-            onPress={() => setSelectedYear('2024')}
-          >
-            <Text style={[styles.yearText, selectedYear === '2024' && styles.yearTextActive]}>
-              2024 Data
-            </Text>
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, { flex: 1.5 }]}>Estate Area</Text>
-            <Text style={styles.tableHeaderCell}>Leaf Weight</Text>
-            <Text style={styles.tableHeaderCell}>Moisture</Text>
-            <Text style={styles.tableHeaderCell}>Water%</Text>
-          </View>
-          
-          <ScrollView>
-            {weightData[selectedYear].map((item, index) => (
-              <View key={index} style={styles.tableRow}>
-                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.area}</Text>
-                <Text style={styles.tableCell}>{item.weight} kg</Text>
-                <Text style={styles.tableCell}>{item.moisture}%</Text>
-                <Text style={styles.tableCell}>{item.waterContent}%</Text>
+
+      <ScrollView style={styles.scrollContent}>
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#6FCF97" style={{ marginTop: 20 }} />
+        ) : sortedDates.length === 0 ? (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>No data for this month</Text>
+        ) : (
+          sortedDates.map(date => (
+            <View key={date} style={styles.dateSection}>
+              <Text style={styles.dateHeader}>{moment(date).format('YYYY MMM D')}</Text>
+              <View style={styles.dataBox}>
+                <View style={styles.rowHeader}>
+                  <Text style={styles.cell}>Tea Bag weight{'\n'}(kg)</Text>
+                  <Text style={styles.cell}>Water{'\n'}(kg)</Text>
+                  <Text style={styles.cell}>Bag{'\n'}(kg)</Text>
+                  <Text style={styles.cell}>Balance Weight{'\n'}(kg)</Text>
+                </View>
+                {groupedByDate[date].map((entry, idx) => (
+                  <View key={idx} style={styles.row}>
+                    <Text style={styles.cell}>{entry.TeaBagWeight_kg}</Text>
+                    <Text style={styles.cell}>{entry.Water_kg}</Text>
+                    <Text style={styles.cell}>{entry.Bag_kg}</Text>
+                    <Text style={[styles.cell, { fontWeight: 'bold', color: 'crimson' }]}>
+                      {entry.BalanceWeight_kg}
+                    </Text>
+                  </View>
+                ))}
+                <Text style={styles.totalText}>
+                  Total Weight: <Text style={{ color: 'crimson', fontWeight: 'bold' }}>
+                    {groupedByDate[date].reduce((sum, e) => sum + (e.BalanceWeight_kg || 0), 0)}kg
+                  </Text>
+                </Text>
               </View>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-      
+            </View>
+          ))
+        )}
+      </ScrollView>
+
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('SupplierHome')}>
           <Ionicons name="home-outline" size={24} color="#999" />
@@ -101,87 +130,72 @@ const LeafWeight = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, backgroundColor: '#E8F8E8' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
     paddingTop: 50,
-    backgroundColor: '#E8F8E8',
+    paddingHorizontal: 15,
+    paddingBottom: 10,
   },
   headerTitle: {
-    fontSize: 28,
-    textAlign: 'center',
+    fontSize: 22,
     fontWeight: 'bold',
     marginLeft: 15,
   },
-  TextContainer: {
-    alignItems: 'center',
-    padding: 20,
+  topCard: {
     backgroundColor: '#B0D8C5',
-    borderRadius: 30,
-  },
-  contentContainer: {
-    flex: 1,
+    margin: 15,
+    borderRadius: 20,
     padding: 15,
   },
-  subtitle: {
+  infoText: {
     fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 15,
-    textAlign: 'left',
+    marginBottom: 5,
+  },
+  bold: {
     fontWeight: 'bold',
   },
-  yearSelector: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  scrollContent: {
+    paddingHorizontal: 15,
+    marginBottom: 70,
+  },
+  dateSection: {
     marginBottom: 20,
   },
-  yearButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    backgroundColor: '#eee',
-  },
-  yearButtonActive: {
-    backgroundColor: '#6FCF97',
-  },
-  yearText: {
-    fontWeight: '500',
-  },
-  yearTextActive: {
-    color: 'white',
-  },
-  tableContainer: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-  },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  tableHeaderCell: {
-    flex: 1,
+  dateHeader: {
+    fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginBottom: 5,
   },
-  tableRow: {
+  dataBox: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  rowHeader: {
     flexDirection: 'row',
-    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderColor: '#ccc',
+    paddingBottom: 6,
   },
-  tableCell: {
+  row: {
+    flexDirection: 'row',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
+  cell: {
     flex: 1,
     textAlign: 'center',
+    fontSize: 13,
+  },
+  totalText: {
+    textAlign: 'right',
+    marginTop: 6,
+    fontSize: 13,
   },
   tabBar: {
     flexDirection: 'row',
@@ -190,6 +204,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#eee',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
   tabItem: {
     alignItems: 'center',

@@ -12,38 +12,37 @@ const SupplierLogin = ({ navigation }) => {
 
   // Function to handle login request
   const handleLogin = async () => {
-    try {
-      // Send POST request to the backend
-      const response = await axios.post(
-        'https://backend-production-f1ac.up.railway.app/api/supplier/login',
-        {
-          username: username,
-          password: password,
-        }
-      );
-
-      // If login is successful, store the token
-      if (response.data.token) {
-        // Store the token for later use (like in AsyncStorage)
-        await AsyncStorage.setItem('token', response.data.token);
-
-        // Navigate to SupplierHome
-        navigation.navigate('SupplierHome');
+  try {
+    const response = await axios.post(
+      'https://backend-production-f1ac.up.railway.app/api/supplier/login',
+      {
+        username: username,
+        password: password,
       }
-    } catch (error) {
-      // Handle error
-      if (error.response) {
-        // Backend responded with an error (e.g., 401 Unauthorized)
-        Alert.alert('Login Failed', error.response.data.message || 'Invalid credentials');
-      } else if (error.request) {
-        // Request was made but no response was received
-        Alert.alert('Login Failed', 'No response from server');
-      } else {
-        // Something else happened
-        Alert.alert('Login Failed', 'An error occurred during login');
-      }
+    );
+
+    // If login is successful
+    if (response.data.token && response.data.supplier) {
+      const { token, supplier } = response.data;
+
+      // Store token and supplier ID
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('supplierId', supplier.id);  // Save the supplier ID
+
+      // Navigate to the home screen
+      navigation.navigate('SupplierHome');
     }
-  };
+  } catch (error) {
+    if (error.response) {
+      Alert.alert('Login Failed', error.response.data.message || 'Invalid credentials');
+    } else if (error.request) {
+      Alert.alert('Login Failed', 'No response from server');
+    } else {
+      Alert.alert('Login Failed', 'An error occurred during login');
+    }
+  }
+};
+
 
   return (
     <View style={styles.container}>

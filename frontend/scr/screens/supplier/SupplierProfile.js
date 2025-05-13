@@ -1,18 +1,46 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+// src/screens/supplier/SupplierProfile.js
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Input from '../../components/Input';
-import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SupplierProfile = ({ navigation }) => {
+  const [supplierId, setSupplierId] = useState('');
   const [fullName, setFullName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [bankName, setBankName] = useState('');
   const [branch, setBranch] = useState('');
+
+  useEffect(() => {
+    const loadSupplierInfo = async () => {
+      try {
+        const id = await AsyncStorage.getItem('supplierId');
+        if (!id) return;
+
+        setSupplierId(id);
+        const res = await axios.get(`https://backend-production-f1ac.up.railway.app/api/supplier/${id}`);
+        const data = res.data;
+
+        setFullName(data.S_FullName || '');
+        setAddress(data.S_Address || '');
+        setEmail(data.Email || '');
+        setContactNumber(data.S_ContactNo || '');
+        setAccountNumber(data.AccountNumber || '');
+        setBankName(data.BankName || '');
+        setBranch(data.Branch || '');
+      } catch (error) {
+        console.error('Failed to fetch supplier data:', error);
+        Alert.alert('Error', 'Failed to load profile data.');
+      }
+    };
+
+    loadSupplierInfo();
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -22,81 +50,79 @@ const SupplierProfile = ({ navigation }) => {
       >
         <AntDesign name="arrowleft" size={24} color="black" />
       </TouchableOpacity>
-      
+
       <View style={styles.formContainer}>
         <View style={styles.profileIcon}>
           <AntDesign name="user" size={60} color="black" />
         </View>
 
-      <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
-        <Text style={styles.registerLink}>Edit Profile</Text>
-      </TouchableOpacity>  
+        <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
+          <Text style={styles.registerLink}>Edit Profile</Text>
+        </TouchableOpacity>  
 
         <Text style={styles.sectionTitle}>Personal Details:</Text>
         <Text style={styles.ProfileDetails}>Register ID:</Text>
         <Input
           placeholder="Register ID"
+          value={supplierId}
+          editable={false}
           style={styles.input}
         />
-        
+
         <Text style={styles.ProfileDetails}>Full Name:</Text>
         <Input
           placeholder="Full Name"
           value={fullName}
-          onChangeText={setFullName}
+          editable={false}
           style={styles.input}
         />
-        
+
         <Text style={styles.ProfileDetails}>Address:</Text>
         <Input
           placeholder="Address"
           value={address}
-          onChangeText={setAddress}
+          editable={false}
           style={styles.input}
         />
-        
+
         <Text style={styles.ProfileDetails}>Contact Number:</Text>
         <Input
           placeholder="Contact Number"
           value={contactNumber}
-          onChangeText={setContactNumber}
-          keyboardType="phone-pad"
+          editable={false}
           style={styles.input}
         />
-        
+
         <Text style={styles.ProfileDetails}>Email:</Text>
         <Input
           placeholder="Email"
           value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
+          editable={false}
           style={styles.input}
         />
 
         <Text style={styles.sectionTitle}>Bank Details:</Text>
-        
+
         <Input
           placeholder="Account Number"
           value={accountNumber}
-          onChangeText={setAccountNumber}
-          keyboardType="numeric"
+          editable={false}
           style={styles.input}
         />
-        
+
         <Input
           placeholder="Bank Name"
           value={bankName}
-          onChangeText={setBankName}
+          editable={false}
           style={styles.input}
         />
 
         <Input
           placeholder="Branch"
           value={branch}
-          onChangeText={setBranch}
+          editable={false}
           style={styles.input}
         />
-        
       </View>
     </ScrollView>
   );
