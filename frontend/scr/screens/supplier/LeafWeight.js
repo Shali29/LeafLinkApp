@@ -70,7 +70,9 @@ const LeafWeight = ({ navigation }) => {
           Date: <Text style={styles.bold}>{moment().format('YYYY MMM D')}</Text>
         </Text>
         <Text style={styles.infoText}>
-          Leaves collected this month: <Text style={styles.bold}>{totalMonthWeight} kg</Text>
+          Leaves collected this month: <Text style={{styles: 'bold', fontSize: 24
+            
+          }}>{totalMonthWeight} kg</Text>
         </Text>
       </View>
 
