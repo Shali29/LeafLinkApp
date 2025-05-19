@@ -27,12 +27,22 @@ const SupplierHome = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
         <View style={styles.profileContainer}>
           <Text style={styles.welcomeText}>Hi, {supplierName || 'Supplier'}!</Text>
         </View>
+
+        <TouchableOpacity
+    onPress={async () => {
+      await AsyncStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }}
+    style={styles.logoutButton}
+  >
+    <Ionicons name="log-out-outline" size={24} color="black" />
+  </TouchableOpacity>
       </View>
 
       <View style={styles.ImageContainer}>
@@ -132,37 +142,72 @@ const SupplierHome = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#fff' },
+
   header: {
     flexDirection: 'row', alignItems: 'center', padding: 15,
-    paddingTop: 50, backgroundColor: '#E8F8E8'
-  },
+    paddingTop: 50, backgroundColor: '#E8F8E8'}
+    ,
+  logoutButton: {
+  marginLeft: 'auto',},
+
   profileContainer: {
-    flexDirection: 'row', alignItems: 'center', marginLeft: 15,
-  },
-  welcomeText: { fontSize: 16, fontWeight: 'bold' },
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginLeft: 15,},
+
+  welcomeText: { 
+    fontSize: 16, 
+    fontWeight: 'bold' },
+
   ImageContainer: {
-    alignItems: 'center', padding: 20, backgroundColor: '#E8F8E8'
-  },
-  image: { Width: 1000, Height: 20 },
-  menuContainer: { flex: 1, padding: 20, marginTop: 20 },
+    alignItems: 'center', 
+    padding: 20, 
+    backgroundColor: '#E8F8E8'},
+
+  image: { 
+    Width: 1000, 
+    Height: 20 },
+
+  menuContainer: { 
+    flex: 1, 
+    padding: 20, 
+    marginTop: 20 },
+
   menuRow: {
-    flexDirection: 'row', justifyContent: 'center',
-    alignItems: 'center', gap: 20
-  },
+    flexDirection: 'row', 
+    justifyContent: 'center',
+    alignItems: 'center', 
+    gap: 20},
+
   menuItem: {
-    width: 100, height: 100, borderRadius: 50,
-    justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9f9f9',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2, shadowRadius: 4
-  },
-  menuText: { fontSize: 14, fontWeight: 'bold', textAlign: 'center' },
+    width: 100, 
+    height: 100, 
+    borderRadius: 50,
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#f9f9f9',
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2, shadowRadius: 4},
+
+  menuText: { 
+    fontSize: 14, 
+    fontWeight: 'bold', 
+    textAlign: 'center' },
+  
   tabBar: {
-    flexDirection: 'row', justifyContent: 'space-around',
-    padding: 15, backgroundColor: '#fff', borderTopWidth: 1,
-    borderTopColor: '#eee'
-  },
-  tabItem: { alignItems: 'center' },
+    flexDirection: 'row', 
+    justifyContent: 'space-around',
+    padding: 15, 
+    backgroundColor: '#fff', 
+    borderTopWidth: 1,
+    borderTopColor: '#eee'},
+
+tabItem: { 
+  alignItems: 'center' },
 });
 
 export default SupplierHome;
