@@ -1,76 +1,73 @@
-/* notification screen*/
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 
 const Notification = ({ navigation }) => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "New message from Sarah",
-      message: "Hey, just checking in about the project deadline.",
-      time: "5 minutes ago",
-      read: false,
-      type: "message"
-    },
-    {
-      id: 2,
-      title: "Meeting reminder",
-      message: "Team standup in 15 minutes.",
-      time: "10 minutes ago",
-      read: false,
-      type: "reminder"
-    },
-    {
-      id: 3,
-      title: "Your document was approved",
-      message: "The proposal you submitted has been approved by management.",
-      time: "1 hour ago",
-      read: true,
-      type: "alert"
-    },
-    {
-      id: 4,
-      title: "System update available",
-      message: "A new system update is available. Please update at your earliest convenience.",
-      time: "2 hours ago",
-      read: true,
-      type: "system"
-    }
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const markAsRead = (id) => {
-    setNotifications(notifications.map(notif => 
-      notif.id === id ? {...notif, read: true} : notif
-    ));
+  const fetchNotifications = async () => {
+    try {
+      const supplierId = await AsyncStorage.getItem('supplierId'); // Assuming you stored supplier ID after login
+      if (!supplierId) {
+        Alert.alert('Error', 'Supplier ID not found');
+        return;
+      }
+
+      const res = await fetch(`https://backend-production-f1ac.up.railway.app/api/notifications/supplier/${supplierId}`);
+      const data = await res.json();
+
+      const formatted = data.map((item) => ({
+        id: item.NotificationID,
+        title: 'Notification',
+        message: item.Message,
+        time: new Date(item.CreatedAt).toLocaleString(),
+        read: item.IsRead,
+      }));
+
+      setNotifications(formatted);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to fetch notifications');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeNotification = (id) => {
-    setNotifications(notifications.filter(notif => notif.id !== id));
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const markAsRead = (id) => {
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
+
+    fetch(`https://backend-production-f1ac.up.railway.app/api/notifications/supplier/read/${id}`, {
+      method: 'PUT',
+    }).catch((err) => console.error('Failed to mark as read', err));
   };
 
   const markAllAsRead = () => {
-    setNotifications(notifications.map(notif => ({...notif, read: true})));
+    notifications.forEach((n) => {
+      if (!n.read) markAsRead(n.id);
+    });
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <SafeAreaView style={styles.container}>
-      
-      <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-      ></TouchableOpacity>
-            <View style={styles.header1}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color="black" />
-              </TouchableOpacity>
-              <Text style={styles.headerTitle1}>Notification</Text>
-            </View>
+      <View style={styles.header1}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle1}>Notification</Text>
+      </View>
 
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={markAllAsRead}>
@@ -82,92 +79,70 @@ const Notification = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Notification count */}
       <View style={styles.countContainer}>
         <Text style={styles.countText}>
           You have {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
         </Text>
       </View>
 
-      {/* Notifications list */}
-      <ScrollView style={styles.notificationsList}>
-        {notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <View 
-              key={notification.id} 
-              style={[
-                styles.notificationItem, 
-                !notification.read && styles.unreadNotification
-              ]}
-            >
-              <View style={styles.notificationContent}>
-                <View style={styles.notificationHeader}>
-                  <Text 
-                    style={[
-                      styles.notificationTitle,
-                      !notification.read && styles.unreadTitle
-                    ]}
-                  >
-                    {notification.title}
-                  </Text>
-                  <Text style={styles.timeText}>{notification.time}</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#6FCF97" style={{ marginTop: 20 }} />
+      ) : (
+        <ScrollView style={styles.notificationsList}>
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <View
+                key={notification.id}
+                style={[
+                  styles.notificationItem,
+                  !notification.read && styles.unreadNotification,
+                ]}
+              >
+                <View style={styles.notificationContent}>
+                  <View style={styles.notificationHeader}>
+                    <Text
+                      style={[
+                        styles.notificationTitle,
+                        !notification.read && styles.unreadTitle,
+                      ]}
+                    >
+                      {notification.title}
+                    </Text>
+                    <Text style={styles.timeText}>{notification.time}</Text>
+                  </View>
+                  <Text style={styles.messageText}>{notification.message}</Text>
                 </View>
-                <Text style={styles.messageText}>{notification.message}</Text>
+                <View style={styles.actionButtons}>
+                  {!notification.read && (
+                    <TouchableOpacity
+                      onPress={() => markAsRead(notification.id)}
+                      style={styles.actionButton}
+                    >
+                      <Ionicons name="checkmark" size={18} color="#10b981" />
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
-              <View style={styles.actionButtons}>
-                {!notification.read && (
-                  <TouchableOpacity 
-                    onPress={() => markAsRead(notification.id)}
-                    style={styles.actionButton}
-                  >
-                    <Ionicons name="checkmark" size={18} color="#10b981" />
-                  </TouchableOpacity>
-                )}
-                <TouchableOpacity 
-                  onPress={() => removeNotification(notification.id)}
-                  style={styles.actionButton}
-                >
-                  <Ionicons name="close" size={18} color="#6b7280" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="chevron-forward" size={18} color="#6b7280" />
-                </TouchableOpacity>
-              </View>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No notifications</Text>
             </View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No notifications</Text>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity>
-          <Text style={styles.viewAllText}>View all notifications</Text>
-        </TouchableOpacity>
-      </View>
+          )}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  backButton: {
-    marginTop: 40,
-    marginBottom: 20,
-  },
+  container: { flex: 1, backgroundColor: 'white' },
   header1: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
     paddingTop: 30,
     backgroundColor: '#E8F8E8',
-    marginTop: 0,
   },
   header: {
     backgroundColor: '#6FCF97',
@@ -177,21 +152,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 30,
   },
-  headerTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   headerTitle1: {
     fontSize: 28,
     textAlign: 'center',
     fontWeight: 'bold',
     marginLeft: 15,
-  },
-  headerTitle: {
-    marginLeft: 8,
-    fontSize: 20,
-    fontWeight: '600',
-    color: 'white',
   },
   headerActions: {
     flexDirection: 'row',
@@ -231,7 +196,6 @@ const styles = StyleSheet.create({
   notificationHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
   },
   notificationTitle: {
     fontWeight: '500',
@@ -268,17 +232,6 @@ const styles = StyleSheet.create({
   emptyStateText: {
     color: '#6b7280',
     fontSize: 16,
-  },
-  footer: {
-    padding: 12,
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  viewAllText: {
-    fontSize: 14,
-    color: '#2563eb',
   },
 });
 

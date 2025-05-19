@@ -1,12 +1,49 @@
 // src/screens/driver/Login.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
 const DriverLogin = ({ navigation }) => {
   const [registerid, setRegisterId] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!registerid.trim()) {
+      Alert.alert('Error', 'Please enter Register ID');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://backend-production-f1ac.up.railway.app/api/driver/requestOtpLogin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          D_RegisterID: registerid,
+        }),
+      });
+
+      const data = await response.json();
+
+      setLoading(false);
+
+      if (response.ok) {
+        // Assuming the response means OTP request was successful
+        // You can pass data to OTP screen if needed
+        navigation.navigate('OtpVerificationScreen', { registerId: registerid });
+      } else {
+        Alert.alert('Login Failed', data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert('Error', error.message || 'Network error');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,12 +71,11 @@ const DriverLogin = ({ navigation }) => {
         />
 
         <Button
-          title="Login"
-          onPress={() => navigation.navigate('OtpVerificationScreen')}
+          title={loading ? "Loading..." : "Login"}
+          onPress={handleLogin}
           style={styles.loginButton}
+          disabled={loading}
         />
-        
-      
       </View>
     </View>
   );
@@ -81,18 +117,6 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: '#FF7A59',
     marginTop: 10,
-  },
-  registerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  registerText: {
-    color: '#555',
-  },
-  registerLink: {
-    color: '#FF7A59',
-    fontWeight: 'bold',
   },
 });
 

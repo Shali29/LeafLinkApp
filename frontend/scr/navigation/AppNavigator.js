@@ -29,6 +29,7 @@ import Suppliers from '../screens/driver/Suppliers';
 import Requests from '../screens/driver/Requests';
 import Map from '../screens/driver/Map';
 import DriverProfile from '../screens/driver/DriverProfile';
+import DriverNotification from '../screens/driver/Notification';
 
 
 const Stack = createStackNavigator();
@@ -62,6 +63,7 @@ const AppNavigator = () => {
       <Stack.Screen name="Requests" component={Requests} />
       <Stack.Screen name="Map" component={Map} />
       <Stack.Screen name="DriverProfile" component={DriverProfile} />
+      <Stack.Screen name="DriverNotification" component={DriverNotification} />
     </Stack.Navigator>
   );
 };

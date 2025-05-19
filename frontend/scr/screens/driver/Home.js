@@ -72,7 +72,7 @@ const DriverHome = ({ navigation }) => {
           <Ionicons name="home" size={24} color="#FF7A59" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem}>
-          <Ionicons onPress={() => navigation.navigate('Notification')} 
+          <Ionicons onPress={() => navigation.navigate('DriverNotification')} 
           name="notifications-outline" size={24} color="#999" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem}>

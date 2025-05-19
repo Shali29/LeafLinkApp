@@ -1,16 +1,49 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../../components/Input';
-import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
 const DriverProfile = ({ navigation }) => {
+  const [registerId, setRegisterId] = useState('');
   const [fullName, setFullName] = useState('');
-  const [Route, setRoute] = useState('');
-  const [vehicleNumber, setVehicleNumber] = useState('');
   const [contactNumber, setContactNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [vehicleNumber, setVehicleNumber] = useState('');
+  const [route, setRoute] = useState('');
+  const [serialCode, setSerialCode] = useState('');
 
-  
+  useEffect(() => {
+    const fetchDriverData = async () => {
+      try {
+        const storedId = await AsyncStorage.getItem('registerId');
+        if (!storedId) {
+          Alert.alert('Error', 'No Register ID found. Please login again.');
+          navigation.navigate('DriverLogin');
+          return;
+        }
+        setRegisterId(storedId);
+
+        const response = await fetch(`https://backend-production-f1ac.up.railway.app/api/driver/DriverById/${storedId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setFullName(data.D_FullName || '');
+          setContactNumber(data.D_ContactNumber || '');
+          setEmail(data.Email || '');
+          setVehicleNumber(data.VehicalNumber || '');
+          setRoute(data.Route || '');
+          setSerialCode(data.Serial_Code || '');
+        } else {
+          Alert.alert('Error', data.message || 'Failed to load driver data');
+        }
+      } catch (error) {
+        Alert.alert('Error', error.message || 'Network error');
+      }
+    };
+
+    fetchDriverData();
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -29,6 +62,8 @@ const DriverProfile = ({ navigation }) => {
         <Text style={styles.ProfileDetails}>Register ID:</Text>
         <Input
           placeholder="Register ID"
+          value={registerId}
+          editable={false}
           style={styles.input}
         />
         
@@ -48,6 +83,15 @@ const DriverProfile = ({ navigation }) => {
           style={styles.input}
         />
         
+        <Text style={styles.ProfileDetails}>Email:</Text>
+        <Input
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          keyboardType="email-address"
+        />
+        
         <Text style={styles.ProfileDetails}>Vehicle Number:</Text>
         <Input
           placeholder="Vehicle Number"
@@ -59,11 +103,18 @@ const DriverProfile = ({ navigation }) => {
         <Text style={styles.ProfileDetails}>Route:</Text>
         <Input
           placeholder="Route"
-          value={Route}
+          value={route}
           onChangeText={setRoute}
           style={styles.input}
         />
-        
+
+        <Text style={styles.ProfileDetails}>Serial Code:</Text>
+        <Input
+          placeholder="Serial Code"
+          value={serialCode}
+          onChangeText={setSerialCode}
+          style={styles.input}
+        />
       </View>
     </ScrollView>
   );
@@ -94,12 +145,6 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#F6C3B6',
-    marginBottom: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
     marginBottom: 15,
   },
   ProfileDetails: {

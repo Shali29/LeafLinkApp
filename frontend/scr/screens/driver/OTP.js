@@ -6,25 +6,24 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  KeyboardAvoidingView,
-  Platform,
-  Dimensions,
+  Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OtpVerificationScreen = ({ navigation }) => {
+const OtpVerificationScreen = ({ navigation, route }) => {
+  const { registerId } = route.params || {}; // Get RegisterID passed from previous screen
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(30);
   const [timerActive, setTimerActive] = useState(true);
+  const [loading, setLoading] = useState(false);
   const inputRefs = useRef([]);
 
-  // Initialize input refs
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
   }, []);
 
-  // Timer countdown
   useEffect(() => {
     let interval = null;
     if (timerActive && timer > 0) {
@@ -38,61 +37,73 @@ const OtpVerificationScreen = ({ navigation }) => {
     return () => clearInterval(interval);
   }, [timerActive, timer]);
 
-  // Format timer as "00:30s"
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}s`;
   };
 
-  // Handle OTP input changes
   const handleOtpChange = (text, index) => {
     const newOtpDigits = [...otpDigits];
     newOtpDigits[index] = text;
     setOtpDigits(newOtpDigits);
-
-    // Auto focus to next input field if value is entered
     if (text && index < 5) {
       inputRefs.current[index + 1].focus();
     }
   };
 
-  // Handle backspace
   const handleKeyPress = (e, index) => {
     if (e.nativeEvent.key === 'Backspace' && !otpDigits[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
 
-  // Handle verify button press
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const otp = otpDigits.join('');
-    // Here you would typically validate the OTP with your backend
-    console.log('Verifying OTP:', otp);
-    
-    // For demo purposes, just show success
-    if (otp.length === 6) {
-      alert('OTP verification successful!');
-      // Navigate to next screen
-      // navigation.navigate('NextScreen');
-    } else {
-      alert('Please enter a valid 6-digit code');
+    if (otp.length !== 6) {
+      Alert.alert('Invalid OTP', 'Please enter a valid 6-digit code');
+      return;
+    }
+    if (!registerId) {
+      Alert.alert('Error', 'Register ID not found');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('https://backend-production-f1ac.up.railway.app/api/driver/validateOtpLogin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          D_RegisterID: registerId,
+          otp: otp,
+        }),
+      });
+
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.ok) {
+        // Save registerId locally
+        await AsyncStorage.setItem('registerId', registerId);
+        Alert.alert('Success', 'OTP verification successful!');
+        console.log('Saved registerId:', registerId);
+        navigation.navigate('DriverHome');
+      } else {
+        Alert.alert('Failed', data.message || 'OTP verification failed');
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert('Error', error.message || 'Network error');
     }
   };
 
-  // Handle Resend OTP
   const handleResendOtp = () => {
-    // Here you would make an API call to resend OTP
+    // TODO: Implement resend OTP API call if available
     console.log('Resending OTP...');
-    
-    // Reset OTP fields
     setOtpDigits(['', '', '', '', '', '']);
-    
-    // Reset timer
     setTimer(30);
     setTimerActive(true);
-    
-    // Focus on first input
     inputRefs.current[0].focus();
   };
 
@@ -100,76 +111,54 @@ const OtpVerificationScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
       
-      {/* Back button */}
-      <TouchableOpacity 
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>←</Text>
       </TouchableOpacity>
       
-      {/* Logo */}
       <View style={styles.logoContainer}>
-        <Image
-          source={require('../../../assets/images/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Image source={require('../../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       </View>
       
-      {/* Heading */}
       <Text style={styles.heading}>Almost there !</Text>
-      
-      {/* Instructions */}
       <Text style={styles.instructions}>
         Please enter the 6-digit code sent to your email for verification.
       </Text>
       
-      {/* OTP Input Fields */}
       <View style={styles.otpContainer}>
         {otpDigits.map((digit, index) => (
           <TextInput
             key={index}
-            ref={(ref) => {
-              inputRefs.current[index] = ref;
-            }}
+            ref={ref => { inputRefs.current[index] = ref; }}
             style={styles.otpInput}
             value={digit}
-            onChangeText={(text) => handleOtpChange(text.replace(/[^0-9]/g, ''), index)}
-            onKeyPress={(e) => handleKeyPress(e, index)}
+            onChangeText={text => handleOtpChange(text.replace(/[^0-9]/g, ''), index)}
+            onKeyPress={e => handleKeyPress(e, index)}
             keyboardType="numeric"
             maxLength={1}
             selectTextOnFocus
             autoFocus={index === 0}
+            editable={!loading}
           />
         ))}
       </View>
       
-      {/* Verify Button */}
       <TouchableOpacity
-        style={styles.verifyButton}
-        onPress={() => navigation.navigate('DriverHome')}
+        style={[styles.verifyButton, loading && { opacity: 0.7 }]}
+        onPress={handleVerify}
+        disabled={loading}
       >
-        <Text style={styles.verifyButtonText}>Verify</Text>
+        <Text style={styles.verifyButtonText}>{loading ? 'Verifying...' : 'Verify'}</Text>
       </TouchableOpacity>
       
-      {/* Resend Code Section */}
       <View style={styles.resendContainer}>
         <Text style={styles.resendText}>Didn't receive any code? </Text>
-        <TouchableOpacity
-          onPress={handleResendOtp}
-          disabled={timerActive}
-        >
-          <Text style={[
-            styles.resendLink,
-            timerActive && styles.resendLinkDisabled
-          ]}>
+        <TouchableOpacity onPress={handleResendOtp} disabled={timerActive || loading}>
+          <Text style={[styles.resendLink, (timerActive || loading) && styles.resendLinkDisabled]}>
             Resend Again
           </Text>
         </TouchableOpacity>
       </View>
       
-      {/* Timer */}
       <Text style={styles.timerText}>
         {timerActive ? `Request new code in ${formatTime(timer)}` : 'You can request a new code now'}
       </Text>

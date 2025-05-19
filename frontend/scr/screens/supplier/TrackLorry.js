@@ -1,61 +1,184 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import * as Location from 'expo-location';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  ActivityIndicator,
+} from "react-native";
+import MapView, { Marker, UrlTile } from "react-native-maps";
+import { Ionicons } from "@expo/vector-icons";
+import DropDownPicker from "react-native-dropdown-picker";
+import axios from "axios";
+import Pusher from "pusher-js/react-native";
 
-export default function LiveLocationScreen({ navigation }) {
+const pusher = new Pusher("04b459376799d9c622c3", {
+  cluster: "ap2",
+  authEndpoint: "https://backend-production-f1ac.up.railway.app/pusher/auth",
+  logToConsole: true,
+});
+
+export default function TrackLorry({ navigation }) {
+  const [driverOpen, setDriverOpen] = useState(false);
+  const [driverItems, setDriverItems] = useState([]);
+  const [driverId, setDriverId] = useState(null);
+
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [loadingDrivers, setLoadingDrivers] = useState(true);
 
+  // Fetch drivers on mount
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
+    async function fetchDrivers() {
+      try {
+        setLoadingDrivers(true);
+        console.log("Fetching drivers...");
+        const res = await axios.get(
+          "https://backend-production-f1ac.up.railway.app/api/driver/AllDrivers"
+        );
+        console.log("Drivers fetched:", res.data.length);
+        const items = res.data.map((d) => ({
+          label: `${d.D_FullName} (${d.D_RegisterID}) - ${d.Route}`,
+          value: d.D_RegisterID,
+        }));
+        setDriverItems(items);
+        if (items.length > 0) {
+          setDriverId(items[0].value);
+          console.log("Default selected driver ID:", items[0].value);
+        }
+      } catch (err) {
+        console.error("Error fetching drivers:", err);
+        setErrorMsg("Failed to load drivers.");
+      } finally {
+        setLoadingDrivers(false);
       }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+    }
+    fetchDrivers();
   }, []);
 
-  const goBack = () => {
+  // Subscribe to location updates on driverId change
+  useEffect(() => {
+    if (!driverId) {
+      console.log("No driver selected yet.");
+      return;
+    }
+
+    console.log(`Subscribing to private-driver-${driverId}`);
+    setErrorMsg(null);
+    setLocation(null);
+
+    const channel = pusher.subscribe(`private-driver-${driverId}`);
+
+    // Log connection state changes
+    pusher.connection.bind("state_change", (states) => {
+      console.log(`Pusher connection state changed: ${states.previous} -> ${states.current}`);
+    });
+
+    // Log connection errors
+    pusher.connection.bind("error", (err) => {
+      console.error("Pusher connection error:", err);
+      setErrorMsg("Pusher connection error: " + err.message);
+    });
+
+    // Listen for location updates
+    channel.bind("client-location-update", (data) => {
+      console.log("Received location update event:", data); // Check if the location update is received
+      if (
+        data &&
+        typeof data.latitude === "number" &&
+        typeof data.longitude === "number"
+      ) {
+        console.log(`Valid location received: lat=${data.latitude}, lng=${data.longitude}`);  // Log latitude and longitude
+        setLocation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+        });
+        setErrorMsg(null);
+      } else {
+        console.warn("Invalid location data received:", data);
+        setErrorMsg("Invalid location data received");
+      }
+    });
+
+    // Subscription success
+    channel.bind("pusher:subscription_succeeded", () => {
+      console.log(`Subscribed successfully to private-driver-${driverId}`);
+      setErrorMsg(null);
+    });
+
+    // Subscription failure
+    channel.bind("pusher:subscription_error", (status) => {
+      console.error("Subscription error:", status);
+      setErrorMsg("Subscription error: " + JSON.stringify(status));
+    });
+
+    // Cleanup on unmount or driverId change
+    return () => {
+      console.log(`Unsubscribing from private-driver-${driverId}`);
+      channel.unbind_all();
+      pusher.unsubscribe(`private-driver-${driverId}`);
+      setLocation(null);
+    };
+  }, [driverId]);
+
+  const goBack = useCallback(() => {
     navigation.goBack();
-  };
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={goBack} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Live Location</Text>
+        <Text style={styles.headerTitle}>Supplier View Live Location</Text>
       </View>
 
-      {/* Map View */}
+      <View style={{ zIndex: 1000, paddingHorizontal: 15, marginVertical: 10 }}>
+        <Text style={styles.sectionTitle}>Select Driver</Text>
+        {loadingDrivers ? (
+          <ActivityIndicator size="small" color="#66bb6a" />
+        ) : (
+          <DropDownPicker
+            open={driverOpen}
+            value={driverId}
+            items={driverItems}
+            setOpen={setDriverOpen}
+            setValue={setDriverId}
+            setItems={setDriverItems}
+            placeholder="Select a driver"
+            style={{ backgroundColor: "#fff" }}
+            dropDownContainerStyle={{ backgroundColor: "#fafafa" }}
+            zIndex={1000}
+            zIndexInverse={3000}
+          />
+        )}
+      </View>
+
       <View style={styles.mapContainer}>
-        {location ? (
+        {errorMsg ? (
+          <View style={styles.loadingContainer}>
+            <Text style={{ color: "red" }}>{errorMsg}</Text>
+          </View>
+        ) : location ? (
           <MapView
-            provider={PROVIDER_GOOGLE}
             style={styles.map}
-            initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+            region={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
             }}
           >
-            <Marker
-              coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }}
-            >
+            <UrlTile
+              urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+              maximumZ={19}
+              flipY={false}
+            />
+            <Marker coordinate={location}>
               <View style={styles.markerContainer}>
                 <View style={styles.marker} />
               </View>
@@ -63,130 +186,42 @@ export default function LiveLocationScreen({ navigation }) {
           </MapView>
         ) : (
           <View style={styles.loadingContainer}>
-            <Text>{errorMsg || 'Loading map...'}</Text>
+            <Text>Waiting for driver's live location...</Text>
           </View>
         )}
-      </View>
-
-      {/* Share Location Button */}
-      <View style={styles.shareContainer}>
-        <View style={styles.sharePrompt}>
-          <FontAwesome name="location-arrow" size={14} color="#05A44C" />
-          <Text style={styles.shareText}>Tap to share your live location</Text>
-        </View>
-      </View>
-
-      {/* User Profile */}
-      <View style={styles.profileContainer}>
-        <Image 
-          source={require('../../../assets/images/My Payment icon.png')} 
-          style={styles.profileImage} 
-        />
-        <View style={styles.profileNameContainer}>
-          <Text style={styles.profileName}>Mr. Perera</Text>
-        </View>
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F4F9F6',
-  },
+  container: { flex: 1, backgroundColor: "#F4F9F6" },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
-    backgroundColor: '#9EDEBA',
+    backgroundColor: "#9EDEBA",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  mapContainer: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  backButton: { padding: 5 },
+  headerTitle: { fontSize: 18, fontWeight: "bold", marginLeft: 10 },
+  sectionTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 6 },
+  mapContainer: { flex: 1, overflow: "hidden" },
+  map: { width: "100%", height: "100%" },
+  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   markerContainer: {
     height: 40,
     width: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   marker: {
     height: 22,
     width: 22,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: 'white',
-  },
-  shareContainer: {
-    position: 'absolute',
-    bottom: 80,
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  sharePrompt: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  shareText: {
-    marginLeft: 8,
-    color: '#05A44C',
-    fontWeight: '500',
-  },
-  profileContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  profileNameContainer: {
-    marginLeft: 10,
-  },
-  profileName: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    borderColor: "white",
   },
 });

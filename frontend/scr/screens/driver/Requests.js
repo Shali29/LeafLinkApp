@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, View, Text, SafeAreaView, TextInput, 
-  TouchableOpacity, FlatList, StatusBar, Alert 
+  TouchableOpacity, FlatList, StatusBar, Alert, Modal, ScrollView 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -10,56 +10,108 @@ export default function Requests({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [allRequests, setAllRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  // Function to fetch orders
+  const fetchRequests = async () => {
+    try {
+      const res = await axios.get('https://backend-production-f1ac.up.railway.app/api/teaPacketFertilizer/all');
+      setAllRequests(res.data);
+      setFilteredRequests(res.data.filter(item => item.Order_Status !== 'Delivered')); // Hide delivered items initially
+    } catch (err) {
+      console.error('Fetch error:', err);
+      Alert.alert('Error', 'Failed to fetch order data');
+    }
+  };
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const res = await axios.get('https://backend-production-f1ac.up.railway.app/api/teaPacketFertilizer/all');
-        setAllRequests(res.data);
-        setFilteredRequests(res.data); // Show all by default
-      } catch (err) {
-        console.error('Fetch error:', err);
-        Alert.alert('Error', 'Failed to fetch order data');
-      }
-    };
-
     fetchRequests();
   }, []);
 
   useEffect(() => {
+    // Search functionality
     if (searchQuery.trim() === '') {
-      setFilteredRequests(allRequests);
+      setFilteredRequests(allRequests.filter(item => item.Order_Status !== 'Delivered'));
     } else {
       const filtered = allRequests.filter(order =>
-        order.S_RegisterID.toLowerCase().includes(searchQuery.toLowerCase())
+        order.S_RegisterID.toLowerCase().includes(searchQuery.toLowerCase()) && order.Order_Status !== 'Delivered'
       );
       setFilteredRequests(filtered);
     }
   }, [searchQuery, allRequests]);
 
-  const totalItems = filteredRequests.reduce((sum, item) => sum + (item.Total_Items || 0), 0);
-  const teaPacketItems = filteredRequests.reduce((sum, item) => sum + (item.Total_TeaPackets || 0), 0);
-  const otherItems = filteredRequests.reduce((sum, item) => sum + (item.Total_OtherItems || 0), 0);
+  // Function to update status to Delivered
+  const updateStatusToDelivered = async (orderID) => {
+    try {
+      await axios.put(`https://backend-production-f1ac.up.railway.app/api/teaPacketFertilizer/updateStatus/${orderID}`, {
+        status: 'Delivered',
+      });
+      fetchRequests();  // Re-fetch to update the list
+      Alert.alert("Success", "Order marked as Delivered.");
+    } catch (err) {
+      console.error('Error updating status:', err);
+      Alert.alert('Error', 'Failed to update order status');
+    }
+  };
 
+  // Function to open modal
+  const openModal = (item) => {
+    setSelectedRequest(item);
+    setModalVisible(true);
+  };
+
+  // Function to close modal
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedRequest(null);
+  };
+
+  // Function to render orders by Supplier
   const renderItem = ({ item }) => (
-    <View style={styles.requestItem}>
+    <TouchableOpacity style={styles.requestItem} onPress={() => openModal(item)}>
       <View style={styles.idColumn}>
         <Text style={styles.idText}>{item.S_RegisterID}</Text>
       </View>
       <View style={styles.nameColumn}>
-        <Text style={styles.nameText}>Tea Packet</Text>
-        <Text style={styles.priceText}>Qty: {item.Qty}</Text>
+        <Text style={styles.nameText}>{item.ProductName}</Text>
       </View>
       <View style={styles.quantityColumn}>
-        <Text style={styles.quantityText}>{item.Total_Items}</Text>
+        <Text style={styles.quantityText}>{item.Qty}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
+
+  // Function to calculate total quantity and orders for each product (only for "Pending" orders)
+  const getProductStats = (productName) => {
+    let totalOrders = 0;
+    let totalQuantity = 0;
+    
+    allRequests.forEach(item => {
+      if (item.ProductName === productName && item.Order_Status !== 'Delivered') {  // Only count Pending orders
+        totalOrders += 1;
+        totalQuantity += item.Qty;
+      }
+    });
+    
+    return { totalOrders, totalQuantity };
+  };
+
+  // Get the list of products for summary (only "Pending" orders)
+  const getUniqueProducts = () => {
+    const products = new Set();
+    allRequests.forEach(item => {
+      if (item.Order_Status !== 'Delivered') {  // Only include Pending orders
+        products.add(item.ProductName);
+      }
+    });
+    return [...products];
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -87,30 +139,64 @@ export default function Requests({ navigation }) {
       <FlatList
         data={filteredRequests}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.TeaFertilizerID}-${index}`}
+        keyExtractor={(item, index) => `${item.Order_ID}-${index}`}
         style={styles.list}
       />
 
-      {/* Totals */}
-      <View style={styles.totalsSection}>
-        <View style={styles.totalItem}>
-          <Text style={styles.totalLabel}>Total Items:</Text>
-          <Text style={styles.totalValue}>{totalItems}</Text>
-        </View>
-        <View style={styles.totalItem}>
-          <Text style={styles.totalLabel}>Total Tea Packets:</Text>
-          <Text style={styles.totalValue}>{teaPacketItems}</Text>
-        </View>
-        <View style={styles.totalItem}>
-          <Text style={styles.totalLabel}>Total Other Items:</Text>
-          <Text style={styles.totalValue}>{otherItems}</Text>
-        </View>
+      {/* Product Summary */}
+      <View style={styles.productSummary}>
+        <Text style={styles.summaryTitle}>Total Orders & Quantities</Text>
+        {getUniqueProducts().map((product, index) => {
+          const { totalOrders, totalQuantity } = getProductStats(product);
+          return (
+            <View key={index} style={styles.summaryItem}>
+              <Text style={styles.summaryText}>Product: {product}</Text>
+              <Text style={styles.summaryText}>Total Orders: {totalOrders}</Text>
+              <Text style={styles.summaryText}>Total Quantity: {totalQuantity}</Text>
+            </View>
+          );
+        })}
       </View>
 
-      {/* Delivery Button */}
-      <TouchableOpacity style={styles.deliverButton}>
-        <Text style={styles.deliverButtonText}>Delivered</Text>
-      </TouchableOpacity>
+      {/* Popup Modal for Detailed View */}
+      <Modal
+        visible={modalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            {selectedRequest && (
+              <>
+                <Text style={styles.modalTitle}>Order Details</Text>
+                <ScrollView contentContainerStyle={styles.modalContent}>
+                  <Text style={styles.modalText}>ID: {selectedRequest.S_RegisterID}</Text>
+                  <Text style={styles.modalText}>Product: {selectedRequest.ProductName}</Text>
+                  <Text style={styles.modalText}>Quantity: {selectedRequest.Qty}</Text>
+                  <Text style={styles.modalText}>Total Items: {selectedRequest.Total_Items}</Text>
+                  <Text style={styles.modalText}>Status: {selectedRequest.Order_Status}</Text>
+                </ScrollView>
+
+                {selectedRequest.Order_Status !== 'Delivered' && (
+                  <TouchableOpacity
+                    style={styles.deliverButton}
+                    onPress={() => {
+                      updateStatusToDelivered(selectedRequest.Order_ID);
+                    }}
+                  >
+                    <Text style={styles.deliverButtonText}>Mark as Delivered</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -142,20 +228,40 @@ const styles = StyleSheet.create({
   },
   idText: { fontSize: 14 },
   nameText: { fontSize: 15 },
-  priceText: { fontSize: 13, color: '#666', marginTop: 3 },
   quantityText: { fontSize: 14, fontWeight: '500' },
-  totalsSection: {
-    backgroundColor: '#fff', paddingHorizontal: 15, paddingVertical: 12,
-    borderTopWidth: 1, borderTopColor: '#ddd',
+
+  // Product Summary Styles
+  productSummary: { padding: 20, backgroundColor: '#fff', marginTop: 20 },
+  summaryTitle: { fontSize: 18, fontWeight: '600', marginBottom: 10 },
+  summaryItem: { marginBottom: 10 },
+  summaryText: { fontSize: 14 },
+
+  // Modal styles
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  totalItem: {
-    flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4,
+  modalContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    maxHeight: '80%',
   },
-  totalLabel: { fontSize: 14, fontWeight: '500' },
-  totalValue: { fontSize: 14, fontWeight: '600' },
+  modalTitle: { fontSize: 20, fontWeight: '600', marginBottom: 20 },
+  modalContent: { marginBottom: 20 },
+  modalText: { fontSize: 16, marginBottom: 8 },
   deliverButton: {
-    backgroundColor: '#FF9E80', paddingVertical: 15, alignItems: 'center',
-    margin: 15, borderRadius: 8,
+    backgroundColor: '#FF9E80', paddingVertical: 10, paddingHorizontal: 20,
+    borderRadius: 8, marginTop: 20, justifyContent: 'center', alignItems: 'center',
   },
   deliverButtonText: { color: '#000', fontSize: 16, fontWeight: '600' },
+  closeButton: {
+    backgroundColor: '#ccc', paddingVertical: 10, paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 10, justifyContent: 'center', alignItems: 'center',
+  },
+  closeButtonText: { color: '#000', fontSize: 16, fontWeight: '600' },
 });
