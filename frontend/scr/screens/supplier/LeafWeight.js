@@ -113,20 +113,7 @@ const LeafWeight = ({ navigation }) => {
         )}
       </ScrollView>
 
-      <View style={styles.tabBar}>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('SupplierHome')}>
-          <Ionicons name="home-outline" size={24} color="#999" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem}>
-          <MaterialIcons name="history" size={29} color="#999" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="notifications-outline" size={24} color="#999" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#999" />
-        </TouchableOpacity>
-      </View>
+    
     </View>
   );
 };
