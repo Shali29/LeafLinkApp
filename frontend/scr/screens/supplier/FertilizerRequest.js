@@ -272,7 +272,7 @@ const FertilizerRequest = ({ navigation }) => {
           {/* Submit Button */}
           <View style={styles.submitContainer}>
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitButtonText}>Submit</Text>
+              <Text style={styles.submitButtonText}>Request</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
 
   selectedItemsSection: {
     marginTop: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#d9d7d7',
     padding: 10,
     borderRadius: 8
   },
