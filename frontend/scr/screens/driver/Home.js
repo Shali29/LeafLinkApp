@@ -7,16 +7,24 @@ const DriverHome = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
+        
         <View style={styles.profileContainer}>
-          {/*<Image 
-            source={require('../../../assets/images/driver-profile.png')} 
-            style={styles.profileImage} 
-          />*/}
           <Text style={styles.welcomeText}>Hi, Mr. Driver!</Text>
         </View>
+
+        <TouchableOpacity
+    onPress={async () => {
+      await AsyncStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'UserType' }],
+      });
+    }}
+    style={styles.logoutButton}
+  >
+    <Ionicons name="log-out-outline" size={24} color="black" />
+  </TouchableOpacity>
+
       </View>
 
       <View style={styles.ImageContainer}>
@@ -96,6 +104,8 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     backgroundColor: '#FFE8E0',
   },
+  logoutButton: {
+    marginLeft: 'auto',},
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',

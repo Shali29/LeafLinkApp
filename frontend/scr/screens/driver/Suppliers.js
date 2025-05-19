@@ -124,7 +124,7 @@ export default function Suppliers({ navigation }) {
             <View style={styles.supplierInfoContainer}>
               <Text style={styles.supplierInfo}>Supplier ID: <Text style={styles.supplierInfoValue}>{supplier.S_RegisterID}</Text></Text>
               <Text style={styles.supplierInfo}>Full Name: <Text style={styles.supplierInfoValue}>{supplier.S_FullName}</Text></Text>
-              <Text style={styles.supplierInfo}>Contact: <Text style={styles.supplierInfoValue}>{supplier.S_ContactNo}</Text></Text>
+  
               <Text style={styles.supplierInfo}>Current Rate: <Text style={styles.supplierInfoValue}>Rs. {rate}/kg</Text></Text>
             </View>
           )}
@@ -190,57 +190,131 @@ export default function Suppliers({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4F9F6' },
-  keyboardAvoidView: { flex: 1 },
-  scrollContainer: { flexGrow: 1, paddingBottom: 20 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F4F9F6' 
+    },
+
+  keyboardAvoidView: { 
+    flex: 1 
+  },
+
+  scrollContainer: { 
+    flexGrow: 1, 
+    paddingBottom: 20 
+  },
+
   header: {
-    flexDirection: 'row', alignItems: 'center',
-    padding: 15, borderBottomLeftRadius: 20, borderBottomRightRadius: 20,
+    flexDirection: 'row', 
+    alignItems: 'center',
+    padding: 15, 
+    borderBottomLeftRadius: 20, 
+    borderBottomRightRadius: 20,
   },
-  backButton: { padding: 5 },
+
+  backButton: { 
+    padding: 5 
+  },
+
   searchBar: {
-    width: '70%', marginLeft: 10,
-    paddingVertical: 6, paddingHorizontal: 12,
-    backgroundColor: '#fff', borderRadius: 20,
-    fontSize: 16, borderWidth: 1, borderColor: '#ccc',
+    width: '70%', 
+    marginLeft: 10,
+    paddingVertical: 6, 
+    paddingHorizontal: 12,
+    backgroundColor: '#fff', 
+    borderRadius: 20,
+    fontSize: 16, 
+    borderWidth: 1, 
+    borderColor: '#ccc',
   },
-  notificationButton: { marginLeft: 10 },
+
+  notificationButton: { 
+    marginLeft: 10 
+  },
+
   supplierInfoContainer: {
-    paddingHorizontal: 20, paddingVertical: 10,
-    backgroundColor: '#AFDFBF', borderRadius: 10,
-    marginHorizontal: 15, marginBottom: 20,
+    paddingHorizontal: 20, 
+    paddingVertical: 10,
+    backgroundColor: '#AFDFBF', 
+    borderRadius: 10,
+    marginHorizontal: 15, 
+    marginBottom: 20,
   },
+
   supplierInfo: {
-    fontSize: 14, color: '#333', marginBottom: 5,
+    fontSize: 14, 
+    color: '#333', 
+    marginBottom: 5,
   },
-  supplierInfoValue: { fontWeight: 'bold' },
-  formContainer: { paddingHorizontal: 20, paddingVertical: 5 },
-  formTitle: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
-  inputGroup: { marginBottom: 15 },
+
+  supplierInfoValue: { 
+    fontWeight: 'bold' 
+  },
+
+  formContainer: { 
+    paddingHorizontal: 20, 
+    paddingVertical: 5 
+  },
+
+  formTitle: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    textAlign: 'center', 
+    marginBottom: 10 
+  },
+  
+  inputGroup: { 
+    marginBottom: 15 
+  },
+  
   inputLabel: {
-    fontSize: 16, marginBottom: 5,
-    fontWeight: '500', fontStyle: 'italic', marginTop: 10,
+    fontSize: 16, 
+    marginBottom: 5,
+    fontWeight: '500', 
+    fontStyle: 'italic', 
+    marginTop: 10,
   },
+  
   input: {
-    backgroundColor: 'white', borderRadius: 8,
-    paddingHorizontal: 12, paddingVertical: 10, fontSize: 16,
-    borderWidth: 1, borderColor: '#E0E0E0',
+    backgroundColor: 'white', 
+    borderRadius: 8,
+    paddingHorizontal: 12, 
+    paddingVertical: 10, 
+    fontSize: 16,
+    borderWidth: 1, 
+    borderColor: '#E0E0E0',
   },
+
   uploadButton: {
     backgroundColor: '#ED7152',
-    paddingVertical: 12, paddingHorizontal: 100,
-    borderRadius: 25, alignItems: 'center',
-    marginTop: 20, shadowColor: '#000',
+    paddingVertical: 12, 
+    paddingHorizontal: 100,
+    borderRadius: 25, 
+    alignItems: 'center',
+    marginTop: 20, 
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2, shadowRadius: 3, elevation: 5,
+    shadowOpacity: 0.2, 
+    shadowRadius: 3, 
+    elevation: 5,
   },
+
   clearButton: {
     backgroundColor: '#F8A895',
-    paddingVertical: 12, paddingHorizontal: 100,
-    borderRadius: 25, alignItems: 'center',
-    marginTop: 20, shadowColor: '#000',
+    paddingVertical: 12, 
+    paddingHorizontal: 100,
+    borderRadius: 25, 
+    alignItems: 'center',
+    marginTop: 20, 
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2, shadowRadius: 3, elevation: 5,
+    shadowOpacity: 0.2, 
+    shadowRadius: 3, 
+    elevation: 5,
   },
-  submitButtonText: { color: 'black', fontSize: 18, fontWeight: 'bold' },
+
+  submitButtonText: { 
+    color: 'black', 
+    fontSize: 18, 
+    fontWeight: 'bold' },
 });
