@@ -36,14 +36,15 @@ const SupplierHome = ({ navigation }) => {
       await AsyncStorage.clear();
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Login' }],
+        routes: [{ name: 'UserType' }],
       });
     }}
     style={styles.logoutButton}
   >
     <Ionicons name="log-out-outline" size={24} color="black" />
   </TouchableOpacity>
-      </View>
+</View>
+
 
       <View style={styles.ImageContainer}>
         <Image 
@@ -140,6 +141,8 @@ const SupplierHome = ({ navigation }) => {
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: { 
