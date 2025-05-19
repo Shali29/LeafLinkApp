@@ -148,76 +148,183 @@ const MyPayments = ({ navigation }) => {
         </View>
       </Modal>
 
-      <View style={styles.tabBar}>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('SupplierHome')}>
-          <Ionicons name="home-outline" size={24} color="#999" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('MyPayments')}>
-          <Ionicons name="cash-outline" size={24} color="#6FCF97" />
-          <Text style={styles.activeTabText}>Payments</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="notifications-outline" size={24} color="#999" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#999" />
-        </TouchableOpacity>
-      </View>
+      
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, 
+    backgroundColor: '#fff' 
+  },
+
   header: {
-    flexDirection: 'row', alignItems: 'center', padding: 15,
-    paddingTop: 50, backgroundColor: '#E8F8E8'
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 15,
+    paddingTop: 50, 
+    backgroundColor: '#E8F8E8'
   },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', marginLeft: 15 },
+
+  headerTitle: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    marginLeft: 15 
+  },
+  
   summaryContainer: {
-    backgroundColor: '#6FCF97', padding: 20, alignItems: 'center'
+    backgroundColor: '#6FCF97', 
+    padding: 20, 
+    alignItems: 'center'
   },
-  summaryTitle: { fontSize: 14, color: '#fff', marginBottom: 5 },
-  summaryAmount: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+
+  summaryTitle: { 
+    fontSize: 14, 
+    color: '#fff', 
+    marginBottom: 5 
+  },
+  summaryAmount: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: '#fff' 
+  },
+  
   periodSelector: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    paddingHorizontal: 15, paddingVertical: 10, backgroundColor: '#f5f5f5'
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
+    paddingHorizontal: 15, 
+    paddingVertical: 10, 
+    backgroundColor: '#f5f5f5'
   },
+
   periodButton: {
-    flex: 1, paddingVertical: 8, paddingHorizontal: 5,
-    borderRadius: 20, marginHorizontal: 5, backgroundColor: '#eee', alignItems: 'center'
+    flex: 1, 
+    paddingVertical: 8, 
+    paddingHorizontal: 5,
+    borderRadius: 20, 
+    marginHorizontal: 5, 
+    backgroundColor: '#eee', 
+    alignItems: 'center'
   },
-  periodButtonActive: { backgroundColor: '#6FCF97' },
-  periodText: { fontWeight: '500' },
-  periodTextActive: { color: 'white' },
-  contentContainer: { flex: 1, padding: 15 },
-  sectionTitle: { fontSize: 16, fontWeight: '600', marginBottom: 15 },
-  paymentsList: { paddingBottom: 20 },
+
+  periodButtonActive: { 
+    backgroundColor: '#6FCF97' 
+  },
+
+  periodText: { 
+    fontWeight: '500' 
+  },
+
+  periodTextActive: { 
+    color: 'white' 
+  },
+
+  contentContainer: { 
+    flex: 1, 
+    padding: 15 
+  },
+
+  sectionTitle: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    marginBottom: 15 
+  },
+
+  paymentsList: { 
+    paddingBottom: 20 
+  },
+
   paymentItem: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee',
-    backgroundColor: '#fff', borderRadius: 8, marginBottom: 10,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1, shadowRadius: 2, elevation: 2
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
+    padding: 15, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#eee',
+    backgroundColor: '#fff', 
+    borderRadius: 8, 
+    marginBottom: 10,
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1, 
+    shadowRadius: 2, 
+    elevation: 2
   },
-  paymentLeft: { flex: 1 },
-  paymentRight: { alignItems: 'flex-end' },
-  paymentDate: { fontSize: 14, fontWeight: '500', marginBottom: 4 },
-  paymentLeaf: { fontSize: 12, color: '#666' },
-  paymentAmount: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
-  statusBadge: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: 12 },
-  pendingBadge: { backgroundColor: '#FFEFD5' },
-  processingBadge: { backgroundColor: '#E6F7FF' },
-  completedBadge: { backgroundColor: '#E8F8E8' },
-  statusText: { fontSize: 11, fontWeight: '500' },
-  emptyState: { padding: 20, alignItems: 'center' },
-  emptyStateText: { color: '#999' },
+
+  paymentLeft: { 
+    flex: 1 
+  },
+
+  paymentRight: { 
+    alignItems: 'flex-end' 
+  },
+  
+  paymentDate: { 
+    fontSize: 14, 
+    fontWeight: '500', 
+    marginBottom: 4 
+  },
+  
+  paymentLeaf: { 
+    fontSize: 12, 
+    color: '#666' 
+  },
+  
+  paymentAmount: { 
+    fontSize: 16, 
+    fontWeight: 'bold', 
+    marginBottom: 4 
+  },
+
+  statusBadge: { 
+    paddingVertical: 2, 
+    paddingHorizontal: 8, 
+    borderRadius: 12 
+  },
+
+  pendingBadge: { 
+    backgroundColor: '#FFEFD5' 
+  },
+
+  processingBadge: { 
+    backgroundColor: '#E6F7FF' 
+  },
+
+  completedBadge: { 
+    backgroundColor: '#E8F8E8' 
+  
+},
+
+  statusText: { 
+    fontSize: 11, 
+    fontWeight: '500' 
+  },
+
+  emptyState: { 
+    padding: 20, 
+    alignItems: 'center' 
+  },
+
+  emptyStateText: { 
+    color: '#999' },
+
   tabBar: {
-    flexDirection: 'row', justifyContent: 'space-around',
-    padding: 15, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#eee'
+    flexDirection: 'row', 
+    justifyContent: 'space-around',
+    padding: 15, 
+    backgroundColor: '#fff', 
+    borderTopWidth: 1, 
+    borderTopColor: '#eee'
   },
-  tabItem: { alignItems: 'center' },
-  activeTabText: { fontSize: 10, color: '#6FCF97', marginTop: 2 },
+
+  tabItem: { 
+    alignItems: 'center' 
+  },
+
+  activeTabText: { 
+    fontSize: 10, 
+    color: '#6FCF97', 
+    marginTop: 2 
+  },
 });
 
 export default MyPayments;
