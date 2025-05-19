@@ -198,7 +198,7 @@ const TeaPacketRequest = ({ navigation }) => {
             </View>
 
             <View style={styles.divider}></View>
-            <Text style={styles.rateText}>Payment Rate per 200g: Rs. {rate}/-</Text>
+            <Text style={styles.rateText}>Payment Rate per 500g: Rs. {rate}/-</Text>
 
             <View style={styles.divider}></View>
             <Text style={styles.totalText}>Total Payment Due: Rs. {totalPayment}/-</Text>
@@ -206,25 +206,12 @@ const TeaPacketRequest = ({ navigation }) => {
 
           <View style={styles.submitContainer}>
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitText}>Submit</Text>
+              <Text style={styles.submitText}>Request</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.tabBar}>
-          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('SupplierHome')}>
-            <Ionicons name="home-outline" size={24} color="#999" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <MaterialIcons name="history" size={29} color="#999" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Ionicons name="notifications-outline" size={24} color="#999" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Ionicons name="person-outline" size={24} color="#999" />
-          </TouchableOpacity>
-        </View>
+        
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
