@@ -37,17 +37,6 @@ const PreOrders = ({ navigation }) => {
         >
           <Text style={styles.buttonText}>Fertilizer</Text>
         </TouchableOpacity>
-        
-        {/* Contact Icons */}
-        <View style={styles.contactContainer}>
-          <TouchableOpacity style={styles.emailButton}>
-            <Ionicons name="mail" size={24} color="black" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.phoneButton}>
-            <Ionicons name="call" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
       </View>
       
     </SafeAreaView>
