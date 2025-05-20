@@ -1,16 +1,8 @@
 import * as Location from "expo-location";
-import Pusher from "pusher-js/react-native";
-
-const pusher = new Pusher("04b459376799d9c622c3", {
-  cluster: "ap2",
-  authEndpoint: "https://backend-production-f1ac.up.railway.app/pusher/auth",
-});
 
 class LocationSharingService {
   subscription = null;
-  channel = null;
   isSharing = false;
-  lastLocation = null;
 
   async startSharing(driverId, onLocationUpdate, onError) {
     if (!driverId) {
@@ -21,6 +13,7 @@ class LocationSharingService {
     if (this.isSharing) return;
 
     try {
+      console.log("Requesting location permissions...");
       const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
       let finalStatus = existingStatus;
 
@@ -34,20 +27,37 @@ class LocationSharingService {
         return;
       }
 
-      // Ensure the driverId is correct before subscribing
       console.log(`Starting location sharing for driver ${driverId}`);
-
-      this.channel = pusher.subscribe(`private-driver-${driverId}`);
 
       this.subscription = await Location.watchPositionAsync(
         { distanceInterval: 5, accuracy: Location.Accuracy.Highest },
-        (loc) => {
+        async (loc) => {
           this.lastLocation = loc.coords;
+          console.log("New location:", loc.coords);
           onLocationUpdate && onLocationUpdate(loc.coords);
-          this.channel.trigger("client-location-update", {
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          });
+
+          // Send location update to backend API for Pusher broadcast
+          try {
+            const res = await fetch(
+              "https://backend-production-f1ac.up.railway.app/api/driver/update-location",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  driverId,
+                  latitude: loc.coords.latitude,
+                  longitude: loc.coords.longitude,
+                }),
+              }
+            );
+            if (!res.ok) {
+              console.error("Failed to update location on backend", await res.text());
+            } else {
+              console.log("Location update sent to backend");
+            }
+          } catch (e) {
+            console.error("Failed to send location to backend", e);
+          }
         }
       );
 
@@ -58,14 +68,11 @@ class LocationSharingService {
     }
   }
 
-  stopSharing(driverId) {
+  stopSharing() {
     if (this.subscription) {
       this.subscription.remove();
       this.subscription = null;
-    }
-    if (this.channel) {
-      pusher.unsubscribe(`private-driver-${driverId}`);
-      this.channel = null;
+      console.log("Location sharing stopped.");
     }
     this.isSharing = false;
     this.lastLocation = null;

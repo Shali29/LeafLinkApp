@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+// DriverLiveLocation.tsx (React Native screen)
+
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -25,44 +27,45 @@ export default function DriverLiveLocation({ navigation }) {
   const [driverItems, setDriverItems] = useState([]);
   const [loadingDrivers, setLoadingDrivers] = useState(true);
 
-  // Fetch driverId from AsyncStorage (or Context)
   useEffect(() => {
     const fetchDriverId = async () => {
       try {
-        const driverId = await AsyncStorage.getItem("driverId");
-        if (driverId) {
-          setDriverId(driverId);
+        const savedDriverId = await AsyncStorage.getItem("driverId");
+        if (savedDriverId) {
+          console.log("Loaded driverId from storage:", savedDriverId);
+          setDriverId(savedDriverId);
         }
       } catch (e) {
         console.error("Error retrieving driverId", e);
       }
     };
-
     fetchDriverId();
   }, []);
 
   useEffect(() => {
-    // Fetch drivers when the component mounts (if necessary)
     const fetchDrivers = async () => {
       try {
+        setLoadingDrivers(true);
         const res = await axios.get("https://backend-production-f1ac.up.railway.app/api/driver/AllDrivers");
         const items = res.data.map((d) => ({
           label: `${d.D_FullName} (${d.D_RegisterID}) - ${d.Route}`,
           value: d.D_RegisterID,
         }));
         setDriverItems(items);
-        if (items.length > 0 && !driverId) setDriverId(items[0].value);  // set default driver if not found
+        if (items.length > 0 && !driverId) {
+          setDriverId(items[0].value);
+          console.log("Default driver set:", items[0].value);
+        }
       } catch (err) {
+        console.error("Failed to load drivers", err);
         setErrorMsg("Failed to load drivers.");
       } finally {
         setLoadingDrivers(false);
       }
     };
-
     fetchDrivers();
   }, [driverId]);
 
-  // Start location sharing
   const startSharing = () => {
     if (!driverId) {
       setErrorMsg("Driver ID is missing. Cannot start sharing.");
@@ -86,15 +89,13 @@ export default function DriverLiveLocation({ navigation }) {
     setSharing(true);
   };
 
-  // Stop location sharing
   const stopSharing = () => {
     console.log("Stopping location sharing...");
-    LocationSharingService.stopSharing(driverId);
+    LocationSharingService.stopSharing();
     setSharing(false);
     setLocation(null);
   };
 
-  // Toggle sharing state
   const toggleSharing = () => {
     if (sharing) stopSharing();
     else startSharing();

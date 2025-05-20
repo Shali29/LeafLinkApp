@@ -16,6 +16,11 @@ export default function Suppliers({ navigation }) {
   const [totalBalanceWeight, setTotalBalanceWeight] = useState('');
   const [rate, setRate] = useState(null);
 
+  // Regex for 2 decimals (optional)
+  const decimalRegex = /^(\d+(\.\d{0,2})?)?$/;
+  // Regex for integer only (optional)
+  const integerRegex = /^(\d+)?$/;
+
   useEffect(() => {
     const fetchRate = async () => {
       try {
@@ -31,11 +36,24 @@ export default function Suppliers({ navigation }) {
 
   useEffect(() => {
     const tea = parseFloat(teaBagWeight) || 0;
-    const water = parseFloat(waterWeight) || 0;
-    const bag = parseFloat(bagWeight) || 0;
+    const water = parseInt(waterWeight) || 0;
+    const bag = parseInt(bagWeight) || 0;
     const total = tea - water - bag;
-    setTotalBalanceWeight(total > 0 ? String(Math.round(total)) : '0');
+    setTotalBalanceWeight(total > 0 ? total.toFixed(2) : '0.00');
   }, [teaBagWeight, waterWeight, bagWeight]);
+
+  // Input handlers with validations
+  const handleTeaBagWeightChange = (text) => {
+    if (decimalRegex.test(text)) setTeaBagWeight(text);
+  };
+
+  const handleWaterWeightChange = (text) => {
+    if (integerRegex.test(text)) setWaterWeight(text);
+  };
+
+  const handleBagWeightChange = (text) => {
+    if (integerRegex.test(text)) setBagWeight(text);
+  };
 
   const handleSearchSupplier = async () => {
     if (!supplierId) return Alert.alert('Enter Supplier ID');
@@ -54,7 +72,7 @@ export default function Suppliers({ navigation }) {
 
     if (
       !teaBagWeight || parseFloat(teaBagWeight) <= 0 ||
-      !bagWeight || parseFloat(bagWeight) <= 0
+      !bagWeight || parseInt(bagWeight) <= 0
     ) {
       return Alert.alert('Validation', 'Tea Bag Weight and Bag Weight are required and must be greater than 0');
     }
@@ -63,8 +81,8 @@ export default function Suppliers({ navigation }) {
       S_RegisterID: supplier.S_RegisterID,
       Current_Rate: parseFloat(rate),
       TeaBagWeight_kg: parseFloat(teaBagWeight),
-      Water_kg: parseFloat(waterWeight) || 0,
-      Bag_kg: parseFloat(bagWeight),
+      Water_kg: parseInt(waterWeight) || 0,
+      Bag_kg: parseInt(bagWeight),
       TotalBalanceWeight: parseFloat(totalBalanceWeight)
     };
 
@@ -105,18 +123,17 @@ export default function Suppliers({ navigation }) {
 
             <TouchableOpacity style={styles.notificationButton}>
               <Ionicons
-  onPress={() => {
-    if (!supplier) {
-      Alert.alert('Info', 'Please search and select a supplier first');
-      return;
-    }
-    navigation.navigate('Requests', { supplierId: supplier.S_RegisterID });
-  }}
-  name="notifications-outline"
-  size={24}
-  color="black"
-/>
-
+                onPress={() => {
+                  if (!supplier) {
+                    Alert.alert('Info', 'Please search and select a supplier first');
+                    return;
+                  }
+                  navigation.navigate('Requests', { supplierId: supplier.S_RegisterID });
+                }}
+                name="notifications-outline"
+                size={24}
+                color="black"
+              />
             </TouchableOpacity>
           </View>
 
@@ -124,7 +141,7 @@ export default function Suppliers({ navigation }) {
             <View style={styles.supplierInfoContainer}>
               <Text style={styles.supplierInfo}>Supplier ID: <Text style={styles.supplierInfoValue}>{supplier.S_RegisterID}</Text></Text>
               <Text style={styles.supplierInfo}>Full Name: <Text style={styles.supplierInfoValue}>{supplier.S_FullName}</Text></Text>
-  
+
               <Text style={styles.supplierInfo}>Current Rate: <Text style={styles.supplierInfoValue}>Rs. {rate}/kg</Text></Text>
             </View>
           )}
@@ -137,7 +154,7 @@ export default function Suppliers({ navigation }) {
               <TextInput
                 style={styles.input}
                 value={teaBagWeight}
-                onChangeText={setTeaBagWeight}
+                onChangeText={handleTeaBagWeightChange}
                 placeholder="Enter tea bag weight"
                 keyboardType="numeric"
               />
@@ -148,7 +165,7 @@ export default function Suppliers({ navigation }) {
               <TextInput
                 style={styles.input}
                 value={waterWeight}
-                onChangeText={setWaterWeight}
+                onChangeText={handleWaterWeightChange}
                 placeholder="Enter water weight (optional)"
                 keyboardType="numeric"
               />
@@ -159,7 +176,7 @@ export default function Suppliers({ navigation }) {
               <TextInput
                 style={styles.input}
                 value={bagWeight}
-                onChangeText={setBagWeight}
+                onChangeText={handleBagWeightChange}
                 placeholder="Enter bag weight"
                 keyboardType="numeric"
               />
@@ -190,131 +207,132 @@ export default function Suppliers({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#F4F9F6' 
-    },
-
-  keyboardAvoidView: { 
-    flex: 1 
+  container: {
+    flex: 1,
+    backgroundColor: '#F4F9F6'
   },
 
-  scrollContainer: { 
-    flexGrow: 1, 
-    paddingBottom: 20 
+  keyboardAvoidView: {
+    flex: 1
+  },
+
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20
   },
 
   header: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 15, 
-    borderBottomLeftRadius: 20, 
+    padding: 15,
+    borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
 
-  backButton: { 
-    padding: 5 
+  backButton: {
+    padding: 5
   },
 
   searchBar: {
-    width: '70%', 
+    width: '70%',
     marginLeft: 10,
-    paddingVertical: 6, 
+    paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#fff', 
+    backgroundColor: '#fff',
     borderRadius: 20,
-    fontSize: 16, 
-    borderWidth: 1, 
+    fontSize: 16,
+    borderWidth: 1,
     borderColor: '#ccc',
   },
 
-  notificationButton: { 
-    marginLeft: 10 
+  notificationButton: {
+    marginLeft: 10
   },
 
   supplierInfoContainer: {
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#AFDFBF', 
+    backgroundColor: '#AFDFBF',
     borderRadius: 10,
-    marginHorizontal: 15, 
+    marginHorizontal: 15,
     marginBottom: 20,
   },
 
   supplierInfo: {
-    fontSize: 14, 
-    color: '#333', 
+    fontSize: 14,
+    color: '#333',
     marginBottom: 5,
   },
 
-  supplierInfoValue: { 
-    fontWeight: 'bold' 
+  supplierInfoValue: {
+    fontWeight: 'bold'
   },
 
-  formContainer: { 
-    paddingHorizontal: 20, 
-    paddingVertical: 5 
+  formContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 5
   },
 
-  formTitle: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    textAlign: 'center', 
-    marginBottom: 10 
+  formTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10
   },
-  
-  inputGroup: { 
-    marginBottom: 15 
+
+  inputGroup: {
+    marginBottom: 15
   },
-  
+
   inputLabel: {
-    fontSize: 16, 
+    fontSize: 16,
     marginBottom: 5,
-    fontWeight: '500', 
-    fontStyle: 'italic', 
+    fontWeight: '500',
+    fontStyle: 'italic',
     marginTop: 10,
   },
-  
+
   input: {
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
     borderRadius: 8,
-    paddingHorizontal: 12, 
-    paddingVertical: 10, 
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     fontSize: 16,
-    borderWidth: 1, 
+    borderWidth: 1,
     borderColor: '#E0E0E0',
   },
 
   uploadButton: {
     backgroundColor: '#ED7152',
-    paddingVertical: 12, 
+    paddingVertical: 12,
     paddingHorizontal: 100,
-    borderRadius: 25, 
+    borderRadius: 25,
     alignItems: 'center',
-    marginTop: 20, 
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2, 
-    shadowRadius: 3, 
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
     elevation: 5,
   },
 
   clearButton: {
     backgroundColor: '#F8A895',
-    paddingVertical: 12, 
+    paddingVertical: 12,
     paddingHorizontal: 100,
-    borderRadius: 25, 
+    borderRadius: 25,
     alignItems: 'center',
-    marginTop: 20, 
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2, 
-    shadowRadius: 3, 
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
     elevation: 5,
   },
 
-  submitButtonText: { 
-    color: 'black', 
-    fontSize: 18, 
-    fontWeight: 'bold' },
+  submitButtonText: {
+    color: 'black',
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
 });

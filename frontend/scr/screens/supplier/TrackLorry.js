@@ -58,63 +58,90 @@ export default function TrackLorry({ navigation }) {
     fetchDrivers();
   }, []);
 
-  // Subscribe to location updates on driverId change
+  // Fetch last location and subscribe to live updates when driverId changes
   useEffect(() => {
     if (!driverId) {
       console.log("No driver selected yet.");
+      setLocation(null);
       return;
     }
 
-    console.log(`Subscribing to private-driver-${driverId}`);
     setErrorMsg(null);
-    setLocation(null);
 
+    // Fetch last known location from backend on driver change
+    const fetchDriverLocation = async () => {
+      try {
+        console.log(`Fetching last location for driver ${driverId}...`);
+        const res = await axios.get(
+          `https://backend-production-f1ac.up.railway.app/api/driver/DriverById/${driverId}`
+        );
+        const driverData = res.data;
+        if (
+          driverData &&
+          driverData.Latitude != null &&
+          driverData.Longitude != null
+        ) {
+          setLocation({
+            latitude: Number(driverData.Latitude),
+            longitude: Number(driverData.Longitude),
+          });
+          console.log(`Loaded last known location for driver ${driverId}`, {
+            latitude: driverData.Latitude,
+            longitude: driverData.Longitude,
+          });
+        } else {
+          setLocation(null);
+          console.log("No saved location for this driver.");
+        }
+      } catch (error) {
+        console.error("Error fetching driver location:", error);
+        setErrorMsg("Error fetching driver location");
+        setLocation(null);
+      }
+    };
+
+    fetchDriverLocation();
+
+    // Now subscribe to live location updates
+    console.log(`Subscribing to private-driver-${driverId}`);
     const channel = pusher.subscribe(`private-driver-${driverId}`);
 
-    // Log connection state changes
     pusher.connection.bind("state_change", (states) => {
       console.log(`Pusher connection state changed: ${states.previous} -> ${states.current}`);
     });
 
-    // Log connection errors
     pusher.connection.bind("error", (err) => {
       console.error("Pusher connection error:", err);
       setErrorMsg("Pusher connection error: " + err.message);
     });
 
-    // Listen for location updates
     channel.bind("client-location-update", (data) => {
-      console.log("Received location update event:", data); // Check if the location update is received
+      console.log("Received location update event:", data);
       if (
         data &&
         typeof data.latitude === "number" &&
         typeof data.longitude === "number"
       ) {
-        console.log(`Valid location received: lat=${data.latitude}, lng=${data.longitude}`);  // Log latitude and longitude
         setLocation({
           latitude: data.latitude,
           longitude: data.longitude,
         });
         setErrorMsg(null);
       } else {
-        console.warn("Invalid location data received:", data);
         setErrorMsg("Invalid location data received");
       }
     });
 
-    // Subscription success
     channel.bind("pusher:subscription_succeeded", () => {
       console.log(`Subscribed successfully to private-driver-${driverId}`);
       setErrorMsg(null);
     });
 
-    // Subscription failure
     channel.bind("pusher:subscription_error", (status) => {
       console.error("Subscription error:", status);
       setErrorMsg("Subscription error: " + JSON.stringify(status));
     });
 
-    // Cleanup on unmount or driverId change
     return () => {
       console.log(`Unsubscribing from private-driver-${driverId}`);
       channel.unbind_all();
