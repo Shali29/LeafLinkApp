@@ -224,7 +224,7 @@ const FertilizerRequest = ({ navigation }) => {
                 >
                   <Text style={styles.quantityButtonText}>−</Text>
                 </TouchableOpacity>
-                <Text style={styles.quantityText}>{quantities[product.ProductID] || 1}</Text>
+                <Text style={styles.quantityText}>{quantities[product.ProductID] || 1}</Text>  {/* quantity count */}
                 <TouchableOpacity
                   style={styles.quantityButton}
                   onPress={() => incrementQuantity(product.ProductID)}
