@@ -9,6 +9,7 @@ const LeafWeight = ({ navigation }) => {
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch collections for the logged-in supplier
   const fetchCollections = async () => {
     try {
       const supplierId = await AsyncStorage.getItem('supplierId');
@@ -23,6 +24,7 @@ const LeafWeight = ({ navigation }) => {
     }
   };
 
+  // Load data on component mount
   useEffect(() => {
     fetchCollections();
   }, []);
@@ -37,6 +39,7 @@ const LeafWeight = ({ navigation }) => {
 
   const currentRate = currentMonthCollections[0]?.Current_Rate || 'N/A';
 
+  // Calculate total weight for current month
   const totalMonthWeight = currentMonthCollections.reduce(
     (sum, item) => sum + (item.BalanceWeight_kg || 0), 0
   );
@@ -44,17 +47,20 @@ const LeafWeight = ({ navigation }) => {
   // Group by date
   const groupedByDate = {};
   currentMonthCollections.forEach(item => {
-    const date = item.DateTime?.split('T')[0];
+    const date = item.DateTime?.split('T')[0]; // Get YYYY-MM-DD
     if (!groupedByDate[date]) {
       groupedByDate[date] = [];
     }
     groupedByDate[date].push(item);
   });
 
+  // Sort dates in descending order (latest first)
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => moment(b).diff(moment(a)));
 
   return (
     <View style={styles.container}>
+
+      {/* Header with back button and title */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -62,6 +68,7 @@ const LeafWeight = ({ navigation }) => {
         <Text style={styles.headerTitle}>Leaf Weight</Text>
       </View>
 
+      {/* Card showing current rate and summary */}
       <View style={styles.topCard}>
         <Text style={styles.infoText}>
           Current rate per 1 kg of tea leaves:  <Text style={styles.bold}>Rs.{currentRate}/-</Text>
@@ -76,15 +83,23 @@ const LeafWeight = ({ navigation }) => {
         </Text>
       </View>
 
+
+      {/* Scrollable section for daily entries */}
       <ScrollView style={styles.scrollContent}>
         {isLoading ? (
+          // Show loading spinner
           <ActivityIndicator size="large" color="#6FCF97" style={{ marginTop: 20 }} />
         ) : sortedDates.length === 0 ? (
+          // If no data found
           <Text style={{ textAlign: 'center', marginTop: 20 }}>No data for this month</Text>
         ) : (
+
+          // Loop through each date group
           sortedDates.map(date => (
             <View key={date} style={styles.dateSection}>
               <Text style={styles.dateHeader}>{moment(date).format('YYYY MMM D')}</Text>
+              
+              {/* Box for showing table of records */}
               <View style={styles.dataBox}>
                 <View style={styles.rowHeader}>
                   <Text style={styles.cell}>Tea Bag weight{'\n'}(kg)</Text>
@@ -102,6 +117,8 @@ const LeafWeight = ({ navigation }) => {
                     </Text>
                   </View>
                 ))}
+
+                {/* Total weight per day */}
                 <Text style={styles.totalText}>
                   Total Weight: <Text style={{ color: 'crimson', fontWeight: 'bold' }}>
                     {groupedByDate[date].reduce((sum, e) => sum + (e.BalanceWeight_kg || 0), 0)}kg
