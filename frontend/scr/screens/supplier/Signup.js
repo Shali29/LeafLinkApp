@@ -5,7 +5,9 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { AntDesign } from '@expo/vector-icons';
 
+// Supplier Signup screen component
 const SupplierSignup = ({ navigation }) => {
+  // State variables for storing supplier details
   const [existingSuppliers, setExistingSuppliers] = useState([]);
 
   const [S_FullName, setS_FullName] = useState('');
@@ -61,7 +63,9 @@ const SupplierSignup = ({ navigation }) => {
     }
   };
 
+  // Function to validate and submit supplier registration
   const handleSubmit = async () => {
+    // Validate empty fields
     if (
       !S_FullName || !S_Address || !Email || !password || !S_ContactNo ||
       !AccountNumber || !BankName || !Branch || !Username || !S_RegisterID
@@ -129,6 +133,7 @@ const SupplierSignup = ({ navigation }) => {
       return;
     }
 
+    // Submit form to backend
     try {
       const response = await fetch('https://backend-production-f1ac.up.railway.app/api/supplier/create', {
         method: 'POST',
@@ -161,6 +166,7 @@ const SupplierSignup = ({ navigation }) => {
     }
   };
 
+  // UI rendering
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
