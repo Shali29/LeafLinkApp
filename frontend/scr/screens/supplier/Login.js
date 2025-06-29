@@ -7,6 +7,7 @@ import axios from 'axios';  // Import axios
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const SupplierLogin = ({ navigation }) => {
+  // State hooks to track user inputs
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -60,6 +61,7 @@ const SupplierLogin = ({ navigation }) => {
         />
       </View>
       
+      {/* Login form */}
       <View style={styles.formContainer}>
         <Text style={styles.title}>User Name:</Text>
         <Input
@@ -84,6 +86,7 @@ const SupplierLogin = ({ navigation }) => {
           style={styles.loginButton}
         />
         
+        {/* Sign-up link */}
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Don't have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('SupplierSignup')}>
