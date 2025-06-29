@@ -6,6 +6,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MyPayments = ({ navigation }) => {
+  // States for data management
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [supplierId, setSupplierId] = useState(null);
   const [supplier, setSupplier] = useState(null);
@@ -21,9 +22,11 @@ const MyPayments = ({ navigation }) => {
 
         setSupplierId(id);
 
+      // Fetch supplier profile
         const supplierRes = await axios.get(`https://backend-production-f1ac.up.railway.app/api/supplier/${id}`);
         setSupplier(supplierRes.data);
 
+        // Fetch payment history
         const res = await axios.get(`https://backend-production-f1ac.up.railway.app/api/supplierPayment/supplier/${id}`);
         setPayments(res.data);
       } catch (error) {
@@ -35,6 +38,7 @@ const MyPayments = ({ navigation }) => {
     fetchData();
   }, []);
 
+  // Filter payments based on selected period (current or previous)
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -50,10 +54,12 @@ const MyPayments = ({ navigation }) => {
       : payMonth < currentMonth || (payMonth === currentMonth && payDay < 10);
   });
 
+  // Calculate total salary from filtered payments
   const calculateTotal = () => {
     return filteredPayments.reduce((sum, payment) => sum + payment.Final_Total_Salary, 0);
   };
 
+  // UI rendering for each payment item
   const renderPaymentItem = ({ item }) => (
     <TouchableOpacity style={styles.paymentItem} onPress={() => { setSelectedPayment(item); setModalVisible(true); }}>
       <View style={styles.paymentLeft}>
@@ -74,6 +80,8 @@ const MyPayments = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+
+      {/* Header with back button */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -81,6 +89,8 @@ const MyPayments = ({ navigation }) => {
         <Text style={styles.headerTitle}>My Payments</Text>
       </View>
 
+
+      {/* Summary Card */}
       <View style={styles.summaryContainer}>
         <Text style={styles.summaryTitle}>
           {selectedPeriod === 'current' ? 'Current Period Earnings' : 'Previous Earnings'}
@@ -88,6 +98,7 @@ const MyPayments = ({ navigation }) => {
         <Text style={styles.summaryAmount}>Rs.{calculateTotal().toLocaleString()}</Text>
       </View>
 
+      {/* Period Toggle Buttons */}
       <View style={styles.periodSelector}>
         <TouchableOpacity 
           style={[styles.periodButton, selectedPeriod === 'current' && styles.periodButtonActive]}
@@ -108,6 +119,7 @@ const MyPayments = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Payment List */}
       <View style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>Payment History</Text>
         <FlatList
