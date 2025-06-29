@@ -8,10 +8,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const SupplierHome = ({ navigation }) => {
   const [supplierName, setSupplierName] = useState('');
 
+  // Fetch supplier details on component mount
   useEffect(() => {
     const fetchSupplier = async () => {
       try {
-        const id = await AsyncStorage.getItem('supplierId');
+        const id = await AsyncStorage.getItem('supplierId'); // Get supplier ID from local storage
         if (!id) return;
 
         const res = await axios.get(`https://backend-production-f1ac.up.railway.app/api/supplier/${id}`);
@@ -26,11 +27,14 @@ const SupplierHome = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+
+      {/* Header section with welcome message and logout button */}
       <View style={styles.header}>
         <View style={styles.profileContainer}>
           <Text style={styles.welcomeText}>Hi, {supplierName || 'Supplier'}!</Text>
         </View>
 
+      {/* Logout button */}
         <TouchableOpacity
     onPress={async () => {
       await AsyncStorage.clear();
@@ -46,6 +50,7 @@ const SupplierHome = ({ navigation }) => {
 </View>
 
 
+      {/* Factory banner image */}
       <View style={styles.ImageContainer}>
         <Image 
           source={require('../../../assets/images/Falcon Factory.png')}
@@ -54,6 +59,7 @@ const SupplierHome = ({ navigation }) => {
         />
       </View>
 
+      {/* First row of menu items */}
       <View style={styles.menuContainer}>
         <View style={[styles.menuRow, { marginTop: 20 }]}>
           <TouchableOpacity 
