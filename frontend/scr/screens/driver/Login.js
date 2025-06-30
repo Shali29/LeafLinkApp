@@ -9,6 +9,7 @@ const DriverLogin = ({ navigation }) => {
   const [registerid, setRegisterId] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Handle the login button press
   const handleLogin = async () => {
     if (!registerid.trim()) {
       Alert.alert('Error', 'Please enter Register ID');
@@ -18,6 +19,7 @@ const DriverLogin = ({ navigation }) => {
     setLoading(true);
 
     try {
+      // Send OTP request to the backend
       const response = await fetch('https://backend-production-f1ac.up.railway.app/api/driver/requestOtpLogin', {
         method: 'POST',
         headers: {
