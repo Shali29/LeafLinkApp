@@ -42,6 +42,8 @@ export default function DriverLiveLocation({ navigation }) {
     fetchDriverId();
   }, []);
 
+  
+  // Fetch all available drivers from backend
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
@@ -52,6 +54,8 @@ export default function DriverLiveLocation({ navigation }) {
           value: d.D_RegisterID,
         }));
         setDriverItems(items);
+
+        // Set default driver if none selected
         if (items.length > 0 && !driverId) {
           setDriverId(items[0].value);
           console.log("Default driver set:", items[0].value);
@@ -66,6 +70,7 @@ export default function DriverLiveLocation({ navigation }) {
     fetchDrivers();
   }, [driverId]);
 
+  // Start live location sharing
   const startSharing = () => {
     if (!driverId) {
       setErrorMsg("Driver ID is missing. Cannot start sharing.");
@@ -89,6 +94,7 @@ export default function DriverLiveLocation({ navigation }) {
     setSharing(true);
   };
 
+  // Stop location sharing
   const stopSharing = () => {
     console.log("Stopping location sharing...");
     LocationSharingService.stopSharing();
@@ -96,6 +102,7 @@ export default function DriverLiveLocation({ navigation }) {
     setLocation(null);
   };
 
+  // Toggle live sharing
   const toggleSharing = () => {
     if (sharing) stopSharing();
     else startSharing();
