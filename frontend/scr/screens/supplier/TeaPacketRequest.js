@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const TeaPacketRequest = ({ navigation }) => {
+  // State variables
   const [teaQuantity, setTeaQuantity] = useState('');
   const [supplierId, setSupplierId] = useState(null);
   const [supplier, setSupplier] = useState(null);
@@ -26,9 +27,11 @@ const TeaPacketRequest = ({ navigation }) => {
   const [selectedDriverId, setSelectedDriverId] = useState(null);
   const [loadingDrivers, setLoadingDrivers] = useState(true);
 
+  // Dropdown picker state
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
 
+   // Load supplier data from local storage and fetch from backend
   const loadSupplierInfo = async () => {
     try {
       const id = await AsyncStorage.getItem('supplierId');
@@ -43,6 +46,7 @@ const TeaPacketRequest = ({ navigation }) => {
     }
   };
 
+  // Fetch tea packet product info
   const fetchProduct = async () => {
     try {
       const res = await axios.get('https://backend-production-f1ac.up.railway.app/api/product/T001');
@@ -52,12 +56,14 @@ const TeaPacketRequest = ({ navigation }) => {
     }
   };
 
+  // Fetch driver list for dropdown selection
   const fetchDrivers = async () => {
     try {
       setLoadingDrivers(true);
       const res = await axios.get('https://backend-production-f1ac.up.railway.app/api/driver/AllDrivers');
       setDrivers(res.data);
 
+      // Map driver data for dropdown format
       const mappedDrivers = res.data.map((driver) => ({
         label: `${driver.D_FullName} (${driver.D_RegisterID}) - ${driver.Route}`,
         value: driver.D_RegisterID,
@@ -75,6 +81,7 @@ const TeaPacketRequest = ({ navigation }) => {
     }
   };
 
+  // Submit order request
   const handleSubmit = async () => {
     const qty = parseInt(teaQuantity);
     if (!qty || qty <= 0) {
@@ -119,6 +126,8 @@ const TeaPacketRequest = ({ navigation }) => {
     fetchDrivers();
   }, []);
 
+
+  // Payment rate and total cost calculation
   const rate = product?.Rate_per_Bag || 0;
   const productName = product?.ProductName || 'Tea Packet';
   const totalPayment = (parseInt(teaQuantity) || 0) * rate;
@@ -129,6 +138,8 @@ const TeaPacketRequest = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
       >
+
+      {/* Header with back button and user info */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="black" />
@@ -151,6 +162,7 @@ const TeaPacketRequest = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Content area */}
         <View style={styles.content}>
           <View style={styles.teaHeader}>
             <Text style={styles.teaHeaderText}>Tea Packet</Text>
