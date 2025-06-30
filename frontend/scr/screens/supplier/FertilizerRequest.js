@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const FertilizerRequest = ({ navigation }) => {
+  // State variables for products, supplier info, and selected items
   const [products, setProducts] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
@@ -23,6 +24,7 @@ const FertilizerRequest = ({ navigation }) => {
   const [driverItems, setDriverItems] = useState([]);
   const [selectedDriverId, setSelectedDriverId] = useState(null);
 
+  // Fetch supplier and product data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,6 +33,7 @@ const FertilizerRequest = ({ navigation }) => {
 
         setSupplierId(id);
 
+        // Parallel API requests for products and supplier info
         const [productRes, supplierRes] = await Promise.all([
           axios.get("https://backend-production-f1ac.up.railway.app/api/product/all"),
           axios.get(`https://backend-production-f1ac.up.railway.app/api/supplier/${id}`)
@@ -55,6 +58,7 @@ const FertilizerRequest = ({ navigation }) => {
       const res = await axios.get('https://backend-production-f1ac.up.railway.app/api/driver/AllDrivers');
       setDrivers(res.data);
 
+      // Convert driver info for DropDownPicker
       const mappedDrivers = res.data.map(driver => ({
         label: `${driver.D_FullName} (${driver.D_RegisterID}) - ${driver.Route}`,
         value: driver.D_RegisterID,
@@ -72,6 +76,7 @@ const FertilizerRequest = ({ navigation }) => {
     }
   };
 
+  // Increment quantity for a selected fertilizer
   const incrementQuantity = (id) => {
     setQuantities(prev => ({
       ...prev,
@@ -86,6 +91,7 @@ const FertilizerRequest = ({ navigation }) => {
     }));
   };
 
+  // Add selected product with quantity to the order list
   const addItem = (item) => {
     const qty = quantities[item.ProductID] || 1;
 
@@ -103,15 +109,18 @@ const FertilizerRequest = ({ navigation }) => {
     setSelectedItems(prev => [...prev, itemData]);
   };
 
+  // Remove a fertilizer from the order list
   const removeItem = (id) => {
     const filtered = selectedItems.filter(item => item.fertilizerId !== id);
     setSelectedItems(filtered);
   };
 
+  // Calculate the total cost of selected items
   const calculateTotalPayment = () => {
     return selectedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  // Submit fertilizer order
   const handleSubmit = async () => {
     if (!supplierId) {
       Alert.alert('Missing Supplier', 'Supplier ID is not set.');

@@ -14,6 +14,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import axios from "axios";
 import Pusher from "pusher-js/react-native";
 
+// Initialize Pusher for real-time communication
 const pusher = new Pusher("04b459376799d9c622c3", {
   cluster: "ap2",
   authEndpoint: "https://backend-production-f1ac.up.railway.app/pusher/auth",
@@ -21,10 +22,12 @@ const pusher = new Pusher("04b459376799d9c622c3", {
 });
 
 export default function TrackLorry({ navigation }) {
+  // Dropdown state
   const [driverOpen, setDriverOpen] = useState(false);
   const [driverItems, setDriverItems] = useState([]);
   const [driverId, setDriverId] = useState(null);
 
+   // Location state
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [loadingDrivers, setLoadingDrivers] = useState(true);
@@ -68,7 +71,7 @@ export default function TrackLorry({ navigation }) {
 
     setErrorMsg(null);
 
-    // Fetch last known location from backend on driver change
+    // Step 1: Fetch last known location from backend on driver change
     const fetchDriverLocation = async () => {
       try {
         console.log(`Fetching last location for driver ${driverId}...`);
@@ -102,10 +105,11 @@ export default function TrackLorry({ navigation }) {
 
     fetchDriverLocation();
 
-    // Now subscribe to live location updates
+    // Step 2: Now subscribe to live location updates
     console.log(`Subscribing to private-driver-${driverId}`);
     const channel = pusher.subscribe(`private-driver-${driverId}`);
 
+    // Optional logging
     pusher.connection.bind("state_change", (states) => {
       console.log(`Pusher connection state changed: ${states.previous} -> ${states.current}`);
     });
@@ -115,6 +119,7 @@ export default function TrackLorry({ navigation }) {
       setErrorMsg("Pusher connection error: " + err.message);
     });
 
+    // Handle incoming location update events
     channel.bind("client-location-update", (data) => {
       console.log("Received location update event:", data);
       if (
@@ -132,6 +137,7 @@ export default function TrackLorry({ navigation }) {
       }
     });
 
+    // Subscription status handling
     channel.bind("pusher:subscription_succeeded", () => {
       console.log(`Subscribed successfully to private-driver-${driverId}`);
       setErrorMsg(null);
@@ -142,6 +148,7 @@ export default function TrackLorry({ navigation }) {
       setErrorMsg("Subscription error: " + JSON.stringify(status));
     });
 
+    // Cleanup when driverId changes or component unmounts
     return () => {
       console.log(`Unsubscribing from private-driver-${driverId}`);
       channel.unbind_all();
