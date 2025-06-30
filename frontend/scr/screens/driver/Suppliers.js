@@ -21,6 +21,7 @@ export default function Suppliers({ navigation }) {
   // Regex for integer only (optional)
   const integerRegex = /^(\d+)?$/;
 
+  // Fetch rate when component mounts
   useEffect(() => {
     const fetchRate = async () => {
       try {
@@ -34,6 +35,8 @@ export default function Suppliers({ navigation }) {
     fetchRate();
   }, []);
 
+  
+  // Recalculate balance weight every time inputs change
   useEffect(() => {
     const tea = parseFloat(teaBagWeight) || 0;
     const water = parseInt(waterWeight) || 0;
@@ -55,6 +58,7 @@ export default function Suppliers({ navigation }) {
     if (integerRegex.test(text)) setBagWeight(text);
   };
 
+  // Search for supplier using their ID
   const handleSearchSupplier = async () => {
     if (!supplierId) return Alert.alert('Enter Supplier ID');
     try {
@@ -66,6 +70,7 @@ export default function Suppliers({ navigation }) {
     }
   };
 
+  // Submit form to backend
   const handleUpload = async () => {
     if (!supplier) return Alert.alert('Error', 'Please search and select a supplier first');
     if (!rate) return Alert.alert('Error', 'Rate information is not available');
@@ -96,6 +101,7 @@ export default function Suppliers({ navigation }) {
     }
   };
 
+   // Clear form
   const handleClear = () => {
     setTeaBagWeight('');
     setWaterWeight('');
