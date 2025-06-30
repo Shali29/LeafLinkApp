@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
 export default function Requests({ navigation }) {
+  // State for managing inputs, data, modal
   const [searchQuery, setSearchQuery] = useState('');
   const [allRequests, setAllRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
@@ -18,6 +19,7 @@ export default function Requests({ navigation }) {
     try {
       const res = await axios.get('https://backend-production-f1ac.up.railway.app/api/teaPacketFertilizer/all');
       setAllRequests(res.data);
+      // Initially show only non-delivered orders
       setFilteredRequests(res.data.filter(item => item.Order_Status !== 'Delivered')); // Hide delivered items initially
     } catch (err) {
       console.error('Fetch error:', err);
@@ -55,7 +57,7 @@ export default function Requests({ navigation }) {
     }
   };
 
-  // Function to open modal
+  // Function to open view details
   const openModal = (item) => {
     setSelectedRequest(item);
     setModalVisible(true);
