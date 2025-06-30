@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Notification = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  // State to show loading indicator
 
   const fetchNotifications = async () => {
     try {
@@ -18,6 +18,7 @@ const Notification = ({ navigation }) => {
       const res = await fetch(`https://backend-production-f1ac.up.railway.app/api/notifications/supplier/${supplierId}`);
       const data = await res.json();
 
+      // Format notifications
       const formatted = data.map((item) => ({
         id: item.NotificationID,
         title: 'Notification',
@@ -39,6 +40,7 @@ const Notification = ({ navigation }) => {
     fetchNotifications();
   }, []);
 
+  // Mark a single notification as read
   const markAsRead = (id) => {
     setNotifications((prev) =>
       prev.map((notif) =>
@@ -46,17 +48,20 @@ const Notification = ({ navigation }) => {
       )
     );
 
+    // Update backend
     fetch(`https://backend-production-f1ac.up.railway.app/api/notifications/supplier/read/${id}`, {
       method: 'PUT',
     }).catch((err) => console.error('Failed to mark as read', err));
   };
 
+  // Mark all unread notifications as read
   const markAllAsRead = () => {
     notifications.forEach((n) => {
       if (!n.read) markAsRead(n.id);
     });
   };
 
+  // Count unread notifications
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
@@ -79,12 +84,14 @@ const Notification = ({ navigation }) => {
         </View>
       </View>
 
+      {/* Notification count display */}
       <View style={styles.countContainer}>
         <Text style={styles.countText}>
           You have {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
         </Text>
       </View>
-
+ 
+    {/* Loader while fetching */}
       {loading ? (
         <ActivityIndicator size="large" color="#6FCF97" style={{ marginTop: 20 }} />
       ) : (
