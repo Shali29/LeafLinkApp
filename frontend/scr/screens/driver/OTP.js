@@ -12,14 +12,22 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// OTP verification screen for driver login
 const OtpVerificationScreen = ({ navigation, route }) => {
   const { registerId } = route.params || {}; // Get RegisterID passed from previous screen
+  // State for holding the 6-digit OTP input
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  // Timer state and control
   const [timer, setTimer] = useState(30);
   const [timerActive, setTimerActive] = useState(true);
+  // Loading state to show progress
   const [loading, setLoading] = useState(false);
+  
+  // References to each OTP TextInput
   const inputRefs = useRef([]);
 
+
+  // Initialize input refs
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
   }, []);
@@ -37,27 +45,34 @@ const OtpVerificationScreen = ({ navigation, route }) => {
     return () => clearInterval(interval);
   }, [timerActive, timer]);
 
+  // Format timer into MM:SSs
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}s`;
   };
 
+
+  // Handle OTP digit input and auto-move to next field
   const handleOtpChange = (text, index) => {
     const newOtpDigits = [...otpDigits];
     newOtpDigits[index] = text;
     setOtpDigits(newOtpDigits);
+
+     // Move to next input if not the last
     if (text && index < 5) {
       inputRefs.current[index + 1].focus();
     }
   };
 
+  // Handle backspace to move focus backward
   const handleKeyPress = (e, index) => {
     if (e.nativeEvent.key === 'Backspace' && !otpDigits[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
 
+  // Handle OTP verification
   const handleVerify = async () => {
     const otp = otpDigits.join('');
     if (otp.length !== 6) {
@@ -71,6 +86,7 @@ const OtpVerificationScreen = ({ navigation, route }) => {
 
     setLoading(true);
     try {
+      // Send OTP and registerId to backend for verification
       const response = await fetch('https://backend-production-f1ac.up.railway.app/api/driver/validateOtpLogin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -98,6 +114,7 @@ const OtpVerificationScreen = ({ navigation, route }) => {
     }
   };
 
+  // Save registerId locally on successful verification
   const handleResendOtp = () => {
     // TODO: Implement resend OTP API call if available
     console.log('Resending OTP...');
